@@ -53,13 +53,13 @@ export default {
         return callback(new Error("请输入密码"));
       }
       // 密码以字母开头,长度在6-18之间,允许字母数字和下划线
-      const passwordRule = /^[a-zA-Z]\w{5,17}$/;
+      const passwordRule = /^[a-zA-Z]\w{4,16}$/;
       if (passwordRule.test(value)) {
         this.$refs.ruleForm.validateField("checkPass");
         return callback();
       } else {
         return callback(
-          new Error("字母开头,长度6-18之间,允许字母数字和下划线")
+          new Error("字母开头,长度5-17之间,允许字母数字和下划线")
         );
       }
     };
@@ -90,41 +90,39 @@ export default {
   methods: {
     ...mapActions(["setUser", "setShowLogin"]),
     Login() {
-      // 通过element自定义表单校验规则，校验用户输入的用户信息
       this.$refs["ruleForm"].validate(valid => {
         //如果通过校验开始登录
         if (valid) {
           this.$axios
-            .post("/api/users/login", {
+            .post("/user/login", {
               userName: this.LoginUser.name,
               password: this.LoginUser.pass
             })
             .then(res => {
-              // “001”代表登录成功，其他的均为失败
-              if (res.data.code === "001") {
+              if (res.data.code === 200) {
                 // 隐藏登录组件
-                this.isLogin = false;
+                this.isLogin = false
                 // 登录信息存到本地
-                let user = JSON.stringify(res.data.user);
-                localStorage.setItem("user", user);
+                let user = res.data.data
+                localStorage.setItem("user", user)
                 // 登录信息存到vuex
-                this.setUser(res.data.user);
+                this.setUser(res.data.data)
                 // 弹出通知框提示登录成功信息
-                this.notifySucceed(res.data.msg);
+                this.notifySucceed('登录成功！')
               } else {
                 // 清空输入框的校验状态
-                this.$refs["ruleForm"].resetFields();
+                this.$refs["ruleForm"].resetFields()
                 // 弹出通知框提示登录失败信息
-                this.notifyError(res.data.msg);
+                this.notifyError(res.data.msg)
               }
             })
             .catch(err => {
-              return Promise.reject(err);
-            });
+              return Promise.reject(err)
+            })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     }
   }
 };

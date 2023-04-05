@@ -145,7 +145,7 @@ export default {
       } else {
         // 用户已经登录,获取该用户的购物车信息
         this.$axios
-          .post("/api/user/shoppingCart/getShoppingCart", {
+          .post("/user/shoppingCart/getShoppingCart", {
             user_id: val.user_id
           })
           .then(res => {

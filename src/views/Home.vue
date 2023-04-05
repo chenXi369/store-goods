@@ -160,7 +160,7 @@ export default {
   created() {
     // 获取轮播图数据
     this.$axios
-      .post("/api/resources/carousel", {})
+      .post("/resources/carousel", {})
       .then(res => {
         this.carousel = res.data.carousel;
       })
@@ -175,12 +175,12 @@ export default {
     this.getPromo(
       ["电视机", "空调", "洗衣机"],
       "applianceList",
-      "/api/product/getHotProduct"
+      "/product/getHotProduct"
     );
     this.getPromo(
       ["保护套", "保护膜", "充电器", "充电宝"],
       "accessoryList",
-      "/api/product/getHotProduct"
+      "/product/getHotProduct"
     );
   },
   methods: {
@@ -194,7 +194,7 @@ export default {
     },
     // 获取各类商品数据方法封装
     getPromo(categoryName, val, api) {
-      api = api != undefined ? api : "/api/product/getPromoProduct";
+      api = api != undefined ? api : "/product/getPromoProduct";
       this.$axios
         .post(api, {
           categoryName
@@ -204,11 +204,12 @@ export default {
         })
         .catch(err => {
           return Promise.reject(err);
-        });
+        })
     }
   }
-};
+}
 </script>
+
 <style scoped>
 @import "../assets/css/index.css";
 </style>
