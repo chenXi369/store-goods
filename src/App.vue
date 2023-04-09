@@ -21,21 +21,15 @@
                   <el-button size="mini" type="text" @click="visible = false">取消</el-button>
                   <el-button type="primary" size="mini" @click="logout">确定</el-button>
                 </div>
-                <el-button type="text" slot="reference">{{this.$store.getters.getUser.userName}}</el-button>
+                <el-button type="text" slot="reference">{{this.$store.getters.getUser.nickName}}</el-button>
               </el-popover>
             </li>
             <li>
-              <router-link to="/order">我的订单</router-link>
+              <router-link to="/address">地址管理</router-link>
             </li>
             <li>
               <router-link to="/collect">我的收藏</router-link>
             </li>
-            <!-- <li :class="getNum > 0 ? 'shopCart-full' : 'shopCart'">
-              <router-link to="/shoppingCart">
-                <i class="el-icon-shopping-cart-full"></i> 购物车
-                <span class="num">({{getNum}})</span>
-              </router-link>
-            </li> -->
           </ul>
         </div>
       </div>

@@ -28,6 +28,14 @@ const routes = [
     component: () => import('../views/Goods.vue')
   },
   {
+    path: '/address',
+    name: 'Address',
+    component: () => import('../views/address.vue'),
+    meta: {
+      requireAuth: true // 需要验证登录状态
+    }
+  },
+  {
     path: '/about',
     name: 'About',
     component: () => import('../views/About.vue')

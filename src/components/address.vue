@@ -1,7 +1,7 @@
 <!--
  * @Description: 列表组件，用于首页、全部商品页面的商品列表
  -->
-<template>
+ <template>
   <div id="myList" class="myList">
     <ul>
       <li v-for="item in list" :key="item.id">

@@ -33,4 +33,37 @@ export function getCommentList() {
   })
 }
 
-// 新增评论
+// 获取地址列表
+export function getAddressList(data) {
+  return request({
+    url: '/userAddress/list',
+    method: 'post',
+    data
+  })
+}
+
+// 新增地址
+export function addAddress(data) {
+  return request({
+    url: `/userAddress/add`,
+    method: 'post',
+    data
+  })
+}
+
+// 删除地址
+export function delAddress(id) {
+  return request({
+    url: `/userAddress/del/${id}`,
+    method: 'delete'
+  })
+}
+
+// 修改地址
+export function updateAddress(data) {
+  return request({
+    url: `/userAddress/update`,
+    method: 'post',
+    data
+  })
+}

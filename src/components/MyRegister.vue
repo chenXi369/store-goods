@@ -3,7 +3,7 @@
  -->
 <template>
   <div id="register">
-    <el-dialog title="注册" width="300px" center :visible.sync="isRegister">
+    <el-dialog title="注册" width="500px" center :visible.sync="isRegister">
       <el-form
         :model="RegisterUser"
         :rules="rules"
@@ -17,6 +17,27 @@
             placeholder="请输入账号"
             v-model="RegisterUser.name"
           ></el-input>
+        </el-form-item>
+        <el-form-item prop="nickName">
+          <el-input
+            prefix-icon="el-icon-s-custom"
+            placeholder="请输入昵称"
+            v-model="RegisterUser.nickName"
+          ></el-input>
+        </el-form-item>
+        <el-form-item>
+          <span>上传头像</span>
+          <el-upload
+            class="avatar-uploader"
+            action="https://h3w3053111.oicp.vip/file/upload"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
+            
+            <img v-if="RegisterUser.avatar" :src="RegisterUser.avatar" class="avatar">
+            
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item prop="pass">
           <el-input
@@ -35,7 +56,7 @@
           ></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button size="medium" type="primary" @click="Register" style="width:100%;">注册</el-button>
+          <el-button size="medium" type="primary" @click="Register" style="width:100%">注册</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -91,12 +112,15 @@ export default {
       RegisterUser: {
         name: "",
         pass: "",
+        avatar: null,
+        nickName: null,
         confirmPass: ""
       },
       // 用户信息校验规则,validator(校验方法),trigger(触发方式),blur为在组件 Input 失去焦点时触发
       rules: {
         name: [{ validator: validateName, trigger: "blur" }],
         pass: [{ validator: validatePass, trigger: "blur" }],
+        nickName: [{ required: true, message: '请输入分类', trigger: 'blur' }],
         confirmPass: [{ validator: validateConfirmPass, trigger: "blur" }]
       }
     }
@@ -117,6 +141,21 @@ export default {
     }
   },
   methods: {
+    handleAvatarSuccess(res, file) {
+      this.RegisterUser.avatar = URL.createObjectURL(file.raw);
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg';
+      const isLt2M = file.size / 1024 / 1024 < 2;
+
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!');
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!');
+      }
+      return isJPG && isLt2M;
+    },
     Register() {
       // 通过element自定义表单校验规则，校验用户输入的用户信息
       this.$refs["ruleForm"].validate(valid => {
@@ -124,8 +163,10 @@ export default {
         if (valid) {
           this.$axios
             .post("/user/register", {
+              nickName: this.RegisterUser.nickName,
               userName: this.RegisterUser.name,
-              password: this.RegisterUser.pass
+              password: this.RegisterUser.pass,
+              avatar: this.RegisterUser.avatar
             })
             .then(res => {
               if (res.data.code === 200) {
@@ -149,5 +190,29 @@ export default {
   }
 };
 </script>
+
 <style>
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>

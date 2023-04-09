@@ -1,53 +1,83 @@
 <!--
  * @Description: 我的收藏页面组件
  -->
-<template>
+ <template>
   <div class="collect">
     <!-- Add a static page for my favorite module -->
     <div class="collect-header">
       <div class="collect-title">
         <i class="el-icon-collection-tag" style="color: #ff6700;"></i>
-        我的收藏
+        我的地址
       </div>
     </div>
     <div class="content">
-      <div class="goods-list" v-if="collectList.length>0">
-        <MyList :list="collectList" :isDelete="true"></MyList>
+      <div class="goods-list" v-if="addressList.length>0">
+        <MyAddress :list="addressList" :isDelete="true"></MyAddress>
       </div>
       <!-- 收藏列表为空的时候显示的内容 -->
       <div v-else class="collect-empty">
         <div class="empty">
-          <h2>您的收藏还是空的！</h2>
-          <p>快去添加收藏吧！</p>
+          <h2>您的地址还是空的！</h2>
+          <p>快去添加地址吧！</p>
+          <p>
+            <el-button type="info" style="width: 200px" @click="addressVisible = true">新增地址</el-button>
+          </p>
         </div>
       </div>
       <!--  收藏列表为空的时候显示的内容END -->
     </div>
+
+    <el-dialog
+      title="新增地址"
+      :visible.sync="addressVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <span>这是一段信息</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="addressVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addressVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getLikeProduct } from '@/api/hasToken'
+import { getAddressList } from '@/api/hasToken'
+import MyAddress from '@/components/address'
 
 export default {
   data() {
     return {
-      collectList: [],
+      addressList: [],
       total: 0,
       queryParams: {
         pageNum: 1,
         pageSize: 10
-      }
-    };
+      },
+      addressVisible: false
+    }
+  },
+  components: {
+    MyAddress
   },
   activated() {
     // 获取收藏数据
-    getLikeProduct({...this.queryParams}).then(res => {
-      this.collectList = [ ...res.data.list ]
+    getAddressList({...this.queryParams}).then(res => {
+      this.addressList = [ ...res.data.list ]
       this.total = res.data.total
     }).catch(err => {
       return Promise.reject(err)
     })
+  },
+  methods: {
+    // 新增地址
+    addAddress() {
+
+    },
+    handleClose() {
+      this.addressVisible = false
+    }
   }
 }
 </script>
