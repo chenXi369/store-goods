@@ -22,36 +22,38 @@
       <div v-else class="collect-empty">
         <div class="empty">
           <h2>您的收藏还是空的！</h2>
-          <p>快去购物吧！</p>
+          <p>快去添加收藏吧！</p>
         </div>
       </div>
       <!--  收藏列表为空的时候显示的内容END -->
     </div>
   </div>
 </template>
+
 <script>
+import { getLikeProduct } from '@/api/hasToken'
+
 export default {
   data() {
     return {
-      collectList: []
+      collectList: [],
+      total: 0,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10
+      }
     };
   },
   activated() {
     // 获取收藏数据
-    this.$axios
-      .post("/api/user/collect/getCollect", {
-        user_id: this.$store.getters.getUser.user_id
-      })
-      .then(res => {
-        if (res.data.code === "001") {
-          this.collectList = res.data.collectList;
-        }
-      })
-      .catch(err => {
-        return Promise.reject(err);
-      });
+    getLikeProduct({...this.queryParams}).then(res => {
+      this.collectList = [ ...res.data.list ]
+      this.total = res.data.total
+    }).catch(err => {
+      return Promise.reject(err)
+    })
   }
-};
+}
 </script>
 <style>
 .collect {

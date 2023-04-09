@@ -6,14 +6,14 @@
     <!-- 头部 -->
     <div class="page-header">
       <div class="title">
-        <p>{{productDetails.product_name}}</p>
+        <p>{{productDetails.name}}</p>
         <div class="list">
           <ul>
             <li>
-              <router-link to style="color: #ff6700">概述</router-link>
+              <el-button type="text" @click="baseInfo = 1" style="color: #ff6700">概述</el-button>
             </li>
             <li>
-              <router-link :to="computedAppraise">用户评价</router-link>
+              <el-button type="text" @click="baseInfo = 0" style="color: #ff6700">用户评价</el-button>
             </li>
           </ul>
         </div>
@@ -27,14 +27,14 @@
       <div class="block">
         <el-carousel height="560px" v-if="productPicture.length>1">
           <el-carousel-item v-for="item in productPicture" :key="item.id">
-            <img style="height:560px;" :src="$target + item.product_picture" :alt="item.intro" />
+            <img style="height:560px;" :src="$target + item.bannerImg" alt />
           </el-carousel-item>
         </el-carousel>
         <div v-if="productPicture.length==1">
           <img
             style="height:560px;"
-            :src="$target + productPicture[0].product_picture"
-            :alt="productPicture[0].intro"
+            :src="$target + productDetails.bannerImg"
+            :alt="productDetails.rotation"
           />
         </div>
       </div>
@@ -42,49 +42,60 @@
 
       <!-- 右侧内容区 -->
       <div class="content">
-        <h1 class="name">{{productDetails.product_name}}</h1>
-        <p class="intro">{{productDetails.product_intro}}</p>
+        <h1 class="name">{{productDetails.name}}</h1>
+        <p class="intro">{{productDetails.remark}}</p>
         <p class="store">小米自营</p>
         <div class="price">
-          <span>{{productDetails.product_selling_price}}元</span>
+          <span>{{productDetails.price}}元</span>
           <span
-            v-show="productDetails.product_price != productDetails.product_selling_price"
+            v-show="productDetails.price != productDetails.price"
             class="del"
-          >{{productDetails.product_price}}元</span>
+          >{{productDetails.price}}元</span>
         </div>
-        <div class="pro-list">
-          <span class="pro-name">{{productDetails.product_name}}</span>
-          <span class="pro-price">
-            <span>{{productDetails.product_selling_price}}元</span>
-            <span
-              v-show="productDetails.product_price != productDetails.product_selling_price"
-              class="pro-del"
-            >{{productDetails.product_price}}元</span>
-          </span>
-          <p class="price-sum">总计 : {{productDetails.product_selling_price}}元</p>
-        </div>
-        <!-- 内容区底部按钮 -->
-        <div class="button">
-          <el-button class="shop-cart" :disabled="dis" @click="addShoppingCart">加入购物车</el-button>
-          <el-button class="like" @click="addCollect">喜欢</el-button>
-        </div>
-        <!-- 内容区底部按钮END -->
-        <div class="pro-policy">
-          <ul>
-            <li>
-              <i class="el-icon-circle-check"></i> 小米自营
-            </li>
-            <li>
-              <i class="el-icon-circle-check"></i> 小米发货
-            </li>
-            <li>
-              <i class="el-icon-circle-check"></i> 7天无理由退货
-            </li>
-            <li>
-              <i class="el-icon-circle-check"></i> 7天价格保护
-            </li>
-          </ul>
-        </div>
+        
+        <template v-if="baseInfo === 1">
+          <div class="pro-list">
+            <span class="pro-name">{{productDetails.name}}</span>
+            <span class="pro-price">
+              <span>{{productDetails.price}}元</span>
+              <span
+                v-show="productDetails.price != productDetails.price"
+                class="pro-del"
+              >{{productDetails.price}}元</span>
+            </span>
+            <p class="price-sum">总计 : {{productDetails.price}}元</p>
+          </div>
+          <!-- 内容区底部按钮 -->
+          <div class="button">
+            <!-- <el-button class="shop-cart" :disabled="dis" @click="addShoppingCart">加入购物车</el-button> -->
+            <el-button class="like" type="primary" @click="addCollect(productDetails.id)">收藏</el-button>
+          </div>
+
+          <!-- 内容区底部按钮END -->
+          <div class="pro-policy">
+            <ul>
+              <li>
+                <i class="el-icon-circle-check"></i> 小米自营
+              </li>
+              <li>
+                <i class="el-icon-circle-check"></i> 小米发货
+              </li>
+              <li>
+                <i class="el-icon-circle-check"></i> 7天无理由退货
+              </li>
+              <li>
+                <i class="el-icon-circle-check"></i> 7天价格保护
+              </li>
+            </ul>
+          </div>
+        </template>
+
+        <template v-else>
+          <h3 style="margin: 8px 5px">用户评论</h3>
+          <div class="commen-list">
+            
+          </div>
+        </template>
       </div>
       <!-- 右侧内容区END -->
     </div>
@@ -92,126 +103,74 @@
   </div>
 </template>
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from 'vuex'
+import { addLikeProdct } from '@/api/hasToken'
 export default {
   data() {
     return {
       dis: false, // 控制“加入购物车按钮是否可用”
-      productID: "", // 商品id
-      productDetails: "", // 商品详细信息
-      productPicture: "" // 商品图片
-    };
+      productId: "", // 商品id
+      productDetails: {}, // 商品详细信息
+      productPicture: [],
+      baseInfo: 1
+    }
   },
   // 通过路由获取商品id
   activated() {
-    if (this.$route.query.productID != undefined) {
-      this.productID = this.$route.query.productID;
+    if (this.$route.query.productId != undefined) {
+      this.productId = this.$route.query.productId
+
+      this.getDetails()
     }
   },
   computed: {
     computedAppraise() {
-      return `/Appraise?productID=${this.productID}`
-    }
+      return `/Appraise?productId=${this.productId}`
+    },
+    // 商品图片
   },  
-  watch: {
-    // 监听商品id的变化，请求后端获取商品数据
-    productID: function(val) {
-      this.getDetails(val);
-      this.getDetailsPicture(val);
-    }
-  },
   methods: {
     ...mapActions(["unshiftShoppingCart", "addShoppingCartNum"]),
     // 获取商品详细信息
-    getDetails(val) {
+    getDetails() {
       this.$axios
-        .post("/api/product/getDetails", {
-          productID: val
+        .post('/product/list', {
+          pageNum: 1,
+          pageSize: 10
         })
         .then(res => {
-          this.productDetails = res.data.Product[0];
+          this.productDetails = [ ...res.data.data.list ].find(item => {
+            return item.id == this.productId
+          })
+          this.productPicture = this.productDetails.bannerImg.split(',')
         })
         .catch(err => {
-          return Promise.reject(err);
-        });
-    },
-    // 获取商品图片
-    getDetailsPicture(val) {
-      this.$axios
-        .post("/api/product/getDetailsPicture", {
-          productID: val
+          return Promise.reject(err)
         })
-        .then(res => {
-          this.productPicture = res.data.ProductPicture;
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
     },
-    // 加入购物车
-    addShoppingCart() {
+    addCollect(id) {
       // 判断是否登录,没有登录则显示登录组件
       if (!this.$store.getters.getUser) {
-        this.$store.dispatch("setShowLogin", true);
-        return;
+        this.$store.dispatch("setShowLogin", true)
+        return
       }
-      this.$axios
-        .post("/api/user/shoppingCart/addShoppingCart", {
-          user_id: this.$store.getters.getUser.user_id,
-          product_id: this.productID
-        })
-        .then(res => {
-          switch (res.data.code) {
-            case "001":
-              // 新加入购物车成功
-              this.unshiftShoppingCart(res.data.shoppingCartData[0]);
-              this.notifySucceed(res.data.msg);
-              break;
-            case "002":
-              // 该商品已经在购物车，数量+1
-              this.addShoppingCartNum(this.productID);
-              this.notifySucceed(res.data.msg);
-              break;
-            case "003":
-              // 商品数量达到限购数量
-              this.dis = true;
-              this.notifyError(res.data.msg);
-              break;
-            default:
-              this.notifyError(res.data.msg);
-          }
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
-    },
-    addCollect() {
-      // 判断是否登录,没有登录则显示登录组件
-      if (!this.$store.getters.getUser) {
-        this.$store.dispatch("setShowLogin", true);
-        return;
-      }
-      this.$axios
-        .post("/api/user/collect/addCollect", {
-          user_id: this.$store.getters.getUser.user_id,
-          product_id: this.productID
-        })
-        .then(res => {
-          if (res.data.code == "001") {
-            // 添加收藏成功
-            this.notifySucceed(res.data.msg);
-          } else {
-            // 添加收藏失败
-            this.notifyError(res.data.msg);
-          }
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
+
+      addLikeProdct(id).then(res => {
+        if (res.code == '200') {
+          // 添加收藏成功
+          this.notifySucceed('收藏成功')
+        } else {
+          // 添加收藏失败
+          this.notifyError(res.data.msg)
+        }
+      }).catch(err => {
+        return Promise.reject(err)
+      })
     }
   }
-};
+}
 </script>
+
 <style>
 /* 头部CSS */
 #details .page-header {
@@ -343,8 +302,7 @@ export default {
 }
 
 #details .main .content .button .like {
-  width: 260px;
-  margin-left: 40px;
+  width: 100%;
   background-color: #b0b0b0;
 }
 #details .main .content .button .like:hover {

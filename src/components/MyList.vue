@@ -10,13 +10,16 @@
     <ul>
       <li v-for="item in list" :key="item.id">
         <el-popover placement="top">
-          <p>确定删除吗？</p>
+          <p>
+            <i type="info" class="el-icon-warning"></i> 确定删除吗？
+          </p>
           <div style="text-align: right; margin: 10px 0 0">
-            <el-button type="primary" size="mini" @click="deleteCollect(item.product_id)">确定</el-button>
+            <el-button size="mini" @click="colsePopover">取消</el-button>
+            <el-button type="primary" size="mini" @click="deleteCollect(item.id)">确定</el-button>
           </div>
           <i class="el-icon-close delete" slot="reference" v-show="isDelete"></i>
         </el-popover>
-        <router-link :to="{ path: '/goods/details', query: {productID:item.product_id} }">
+        <router-link :to="{ path: '/goods/details', query: {productId: item.id} }">
           <img :src="$target + item.bannerImg" alt />
           <h2>{{item.name}}</h2>
           <h3>{{item.remark}}</h3>
@@ -27,7 +30,7 @@
         </router-link>
       </li>
       <li v-show="isMore && list.length>=1" id="more">
-        <router-link :to="{ path: '/goods', query: {categoryID:categoryID} }">
+        <router-link :to="{ path: '/goods', query: {categoryId: categoryId} }">
           浏览更多
           <i class="el-icon-d-arrow-right"></i>
         </router-link>
@@ -36,6 +39,8 @@
   </div>
 </template>
 <script>
+import { cancelLikeProduct } from '@/api/hasToken'
+
 export default {
   name: "MyList",
   // list为父组件传过来的商品列表
@@ -46,48 +51,36 @@ export default {
   },
   computed: {
     // 通过list获取当前显示的商品的分类ID，用于“浏览更多”链接的参数
-    categoryID: function() {
-      let categoryID = [];
+    categoryId: function() {
+      let categoryId = [];
       if (this.list != "") {
         for (let i = 0; i < this.list.length; i++) {
           const id = this.list[i].category_id;
-          if (!categoryID.includes(id)) {
-            categoryID.push(id);
+          if (!categoryId.includes(id)) {
+            categoryId.push(id);
           }
         }
       }
-      return categoryID;
+      return categoryId;
     }
   },
   methods: {
+    // 取消关注成功
     deleteCollect(product_id) {
-      this.$axios
-        .post("/api/user/collect/deleteCollect", {
-          user_id: this.$store.getters.getUser.user_id,
-          product_id: product_id
-        })
-        .then(res => {
-          switch (res.data.code) {
-            case "001":
-              // 删除成功
-              // 删除删除列表中的该商品信息
-              for (let i = 0; i < this.list.length; i++) {
-                const temp = this.list[i];
-                if (temp.product_id == product_id) {
-                  this.list.splice(i, 1);
-                }
-              }
-              // 提示删除成功信息
-              this.notifySucceed(res.data.msg);
-              break;
-            default:
-              // 提示删除失败信息
-              this.notifyError(res.data.msg);
+      cancelLikeProduct(product_id).then(() => {
+        // 删除删除列表中的该商品信息
+        for (let i = 0; i < this.list.length; i++) {
+          const temp = this.list[i];
+          if (temp.id == product_id) {
+            this.list.splice(i, 1);
           }
-        })
-        .catch(err => {
-          return Promise.reject(err);
-        });
+        }
+        // 提示删除成功信息
+        this.notifySucceed('删除成功！')
+      })
+    },
+    colsePopover() {
+
     }
   }
 };

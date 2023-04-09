@@ -111,12 +111,12 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import { mapGetters } from "vuex";
+import { mapActions } from "vuex"
+import { mapGetters } from "vuex"
 
 export default {
   beforeUpdate() {
-    this.activeIndex = this.$route.path;
+    this.activeIndex = this.$route.path
   },
   data() {
     return {
@@ -124,7 +124,7 @@ export default {
       search: "", // 搜索条件
       register: false, // 是否显示注册组件
       visible: false // 是否退出登录
-    };
+    }
   },
   created() {
     // 获取浏览器localStorage，判断用户是否已经登录
