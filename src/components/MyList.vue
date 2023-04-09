@@ -8,7 +8,7 @@
 <template>
   <div id="myList" class="myList">
     <ul>
-      <li v-for="item in list" :key="item.product_id">
+      <li v-for="item in list" :key="item.id">
         <el-popover placement="top">
           <p>确定删除吗？</p>
           <div style="text-align: right; margin: 10px 0 0">
@@ -17,15 +17,12 @@
           <i class="el-icon-close delete" slot="reference" v-show="isDelete"></i>
         </el-popover>
         <router-link :to="{ path: '/goods/details', query: {productID:item.product_id} }">
-          <img :src="$target +item.product_picture" alt />
-          <h2>{{item.product_name}}</h2>
-          <h3>{{item.product_title}}</h3>
+          <img :src="$target + item.bannerImg" alt />
+          <h2>{{item.name}}</h2>
+          <h3>{{item.remark}}</h3>
           <p>
-            <span>{{item.product_selling_price}}元</span>
-            <span
-              v-show="item.product_price != item.product_selling_price"
-              class="del"
-            >{{item.product_price}}元</span>
+            <span>{{item.price}}元</span>
+            <span class="del">{{item.price}}元</span>
           </p>
         </router-link>
       </li>

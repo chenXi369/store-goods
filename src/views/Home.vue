@@ -16,12 +16,13 @@
       </el-carousel>
     </div>
     <!-- 轮播图END -->
+
     <div class="main-box">
       <div class="main">
         <!-- 手机商品展示区域 -->
-        <div class="phone">
+        <div class="phone" v-for="tab in goodTabs" :key="tab.id">
           <div class="box-hd">
-            <div class="title">手机</div>
+            <div class="title">{{ tab.name }}</div>
           </div>
           <div class="box-bd">
             <div class="promo-list">
@@ -35,65 +36,6 @@
           </div>
         </div>
         <!-- 手机商品展示区域END -->
-
-        <!-- 家电商品展示区域 -->
-        <div class="appliance" id="promo-menu">
-          <div class="box-hd">
-            <div class="title">家电</div>
-            <div class="more" id="more">
-              <MyMenu :val="2" @fromChild="getChildMsg">
-                <span slot="1">热门</span>
-                <span slot="2">电视影音</span>
-              </MyMenu>
-            </div>
-          </div>
-          <div class="box-bd">
-            <div class="promo-list">
-              <ul>
-                <li>
-                  <img :src="$target +'public/imgs/appliance/appliance-promo1.png'" />
-                </li>
-                <li>
-                  <img :src="$target +'public/imgs/appliance/appliance-promo2.png'" />
-                </li>
-              </ul>
-            </div>
-            <div class="list">
-              <MyList :list="applianceList" :isMore="true"></MyList>
-            </div>
-          </div>
-        </div>
-        <!-- 家电商品展示区域END -->
-
-        <!-- 配件商品展示区域 -->
-        <div class="accessory" id="promo-menu">
-          <div class="box-hd">
-            <div class="title">配件</div>
-            <div class="more" id="more">
-              <MyMenu :val="3" @fromChild="getChildMsg2">
-                <span slot="1">热门</span>
-                <span slot="2">保护套</span>
-                <span slot="3">充电器</span>
-              </MyMenu>
-            </div>
-          </div>
-          <div class="box-bd">
-            <div class="promo-list">
-              <ul>
-                <li>
-                  <img :src="$target +'public/imgs/accessory/accessory-promo1.png'" alt />
-                </li>
-                <li>
-                  <img :src="$target +'public/imgs/accessory/accessory-promo2.png'" alt />
-                </li>
-              </ul>
-            </div>
-            <div class="list">
-              <MyList :list="accessoryList" :isMore="true"></MyList>
-            </div>
-          </div>
-        </div>
-        <!-- 配件商品展示区域END -->
       </div>
     </div>
   </div>
@@ -112,8 +54,10 @@ export default {
       protectingShellList: "", // 保护套商品列表
       chargerList: "", //充电器商品列表
       applianceActive: 1, // 家电当前选中的商品分类
-      accessoryActive: 1 // 配件当前选中的商品分类
-    };
+      accessoryActive: 1, // 配件当前选中的商品分类
+
+      goodTabs: [] 
+    }
   },
   watch: {
     // 家电当前选中的商品分类，响应不同的商品数据
@@ -158,32 +102,34 @@ export default {
     }
   },
   created() {
-    // 获取轮播图数据
+    // 获取轮播图数据(推荐商品)
     this.$axios
-      .post("/resources/carousel", {})
+      .post('/product/recommend')
       .then(res => {
-        this.carousel = res.data.carousel;
+        this.carousel = [ ...res.data.data.list ]
       })
       .catch(err => {
         return Promise.reject(err);
-      });
-    // 获取各类商品数据
-    this.getPromo("手机", "phoneList");
-    this.getPromo("电视机", "miTvList");
-    this.getPromo("保护套", "protectingShellList");
-    this.getPromo("充电器", "chargerList");
-    this.getPromo(
-      ["电视机", "空调", "洗衣机"],
-      "applianceList",
-      "/product/getHotProduct"
-    );
-    this.getPromo(
-      ["保护套", "保护膜", "充电器", "充电宝"],
-      "accessoryList",
-      "/product/getHotProduct"
-    );
+      })
+    // 先获取商品分类
+    this.getGoodCate()
   },
   methods: {
+    getGoodCate() {
+      const data = {
+        pageNum: 1,
+        pageSize: 20
+      }
+      this.$axios.post('/category/list', data).then(res => {
+        console.log(res)
+        this.goodTabs = [...res.data.data.list]
+
+        if(this.goodTabs && this.goodTabs.length) {
+          // 获取各类商品数据
+          this.getPromo(this.goodTabs[0])
+        }
+      })
+    },
     // 获取家电模块子组件传过来的数据
     getChildMsg(val) {
       this.applianceActive = val;
@@ -193,14 +139,12 @@ export default {
       this.accessoryActive = val;
     },
     // 获取各类商品数据方法封装
-    getPromo(categoryName, val, api) {
-      api = api != undefined ? api : "/product/getPromoProduct";
+    getPromo(val, api) {
+      api = api != undefined ? api : '/product/list'
       this.$axios
-        .post(api, {
-          categoryName
-        })
+        .post(api)
         .then(res => {
-          this[val] = res.data.Product;
+          this[val] = [ ...res.data.list ]
         })
         .catch(err => {
           return Promise.reject(err);

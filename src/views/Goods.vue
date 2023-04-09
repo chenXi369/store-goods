@@ -22,9 +22,9 @@
         <el-tabs v-model="activeName" type="card">
           <el-tab-pane
             v-for="item in categoryList"
-            :key="item.category_id"
-            :label="item.category_name"
-            :name="''+item.category_id"
+            :key="item.id"
+            :label="item.name"
+            :name="''+item.id"
           />
         </el-tabs>
       </div>
@@ -57,19 +57,27 @@ export default {
   data() {
     return {
       categoryList: "", //分类列表
-      categoryID: [], // 分类id
+      categoryId: null, // 分类id
       product: "", // 商品列表
       productList: "",
+
       total: 0, // 商品总量
-      pageSize: 15, // 每页显示的商品数量
-      currentPage: 1, //当前页码
       activeName: "-1", // 分类列表当前选中的id
-      search: "" // 搜索条件
+      search: "", // 搜索条件,
+
+      queryParams: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      goodParams: {
+        pageSize: 15,
+        pageNum: 1
+      }
     };
   },
   created() {
     // 获取分类列表
-    this.getCategory();
+    this.getCategory()
   },
   activated() {
     this.activeName = "-1"; // 初始化分类列表当前选中的id为-1
@@ -77,15 +85,15 @@ export default {
     this.currentPage = 1; //初始化当前页码为1
     // 如果路由没有传递参数，默认为显示全部商品
     if (Object.keys(this.$route.query).length == 0) {
-      this.categoryID = [];
-      this.activeName = "0";
-      return;
+      this.categoryId = null
+      this.activeName = "0"
+      return
     }
-    // 如果路由传递了categoryID，则显示对应的分类商品
-    if (this.$route.query.categoryID != undefined) {
-      this.categoryID = this.$route.query.categoryID;
-      if (this.categoryID.length == 1) {
-        this.activeName = "" + this.categoryID[0];
+    // 如果路由传递了categoryId，则显示对应的分类商品
+    if (this.$route.query.categoryId != undefined) {
+      this.categoryId = this.$route.query.categoryId
+      if (this.categoryId.length == 1) {
+        this.activeName = "" + this.categoryId[0]
       }
       return;
     }
@@ -98,10 +106,10 @@ export default {
     // 监听点击了哪个分类标签，通过修改分类id，响应相应的商品
     activeName: function(val) {
       if (val == 0) {
-        this.categoryID = [];
+        this.categoryId = null
       }
       if (val > 0) {
-        this.categoryID = [Number(val)];
+        this.categoryId = Number(val)
       }
       // 初始化商品总量和当前页码
       this.total = 0;
@@ -109,7 +117,7 @@ export default {
       // 更新地址栏链接，方便刷新页面可以回到原来的页面
       this.$router.push({
         path: "/goods",
-        query: { categoryID: this.categoryID }
+        query: { categoryId: this.categoryId }
       });
     },
     // 监听搜索条件，响应相应的商品
@@ -119,7 +127,7 @@ export default {
       }
     },
     // 监听分类id，响应相应的商品
-    categoryID: function() {
+    categoryId: function() {
       this.getData();
       this.search = "";
     },
@@ -162,36 +170,34 @@ export default {
     // 向后端请求分类列表数据
     getCategory() {
       this.$axios
-        .post("/api/product/getCategory", {})
-        .then(res => {
+        .post('/category/list', {...this.queryParams}).then(res => {
           const val = {
-            category_id: 0,
-            category_name: "全部"
-          };
-          const cate = res.data.category;
-          cate.unshift(val);
-          this.categoryList = cate;
+            id: 0,
+            name: "全部"
+          }
+          const cate = res.data.data.list
+          console.log(cate)
+          cate.unshift(val)
+          this.categoryList = cate
+
+          this.getData()
         })
         .catch(err => {
-          return Promise.reject(err);
-        });
+          return Promise.reject(err)
+        })
     },
     // 向后端请求全部商品或分类商品数据
     getData() {
       // 如果分类列表为空则请求全部商品数据，否则请求分类商品数据
-      const api =
-        this.categoryID.length == 0
-          ? "/api/product/getAllProduct"
-          : "/api/product/getProductByCategory";
       this.$axios
-        .post(api, {
-          categoryID: this.categoryID,
-          currentPage: this.currentPage,
-          pageSize: this.pageSize
+        .post('/product/list', {
+          categoryId: this.categoryId,
+          pageNum: this.goodParams.pageNum,
+          pageSize: this.goodParams.pageSize
         })
         .then(res => {
-          this.product = res.data.Product;
-          this.total = res.data.total;
+          this.product = [...res.data.data.list]
+          this.total = res.data.total
         })
         .catch(err => {
           return Promise.reject(err);
@@ -202,8 +208,8 @@ export default {
       this.$axios
         .post("/api/product/getProductBySearch", {
           search: this.search,
-          currentPage: this.currentPage,
-          pageSize: this.pageSize
+          pageNum: this.goodParams.pageNum,
+          pageSize: this.goodParams.pageSize
         })
         .then(res => {
           this.product = res.data.Product;

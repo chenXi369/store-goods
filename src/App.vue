@@ -30,12 +30,12 @@
             <li>
               <router-link to="/collect">我的收藏</router-link>
             </li>
-            <li :class="getNum > 0 ? 'shopCart-full' : 'shopCart'">
+            <!-- <li :class="getNum > 0 ? 'shopCart-full' : 'shopCart'">
               <router-link to="/shoppingCart">
                 <i class="el-icon-shopping-cart-full"></i> 购物车
                 <span class="num">({{getNum}})</span>
               </router-link>
-            </li>
+            </li> -->
           </ul>
         </div>
       </div>
@@ -130,38 +130,11 @@ export default {
     // 获取浏览器localStorage，判断用户是否已经登录
     if (localStorage.getItem("user")) {
       // 如果已经登录，设置vuex登录状态
-      this.setUser(JSON.parse(localStorage.getItem("user")));
+      this.setUser(localStorage.getItem("user"))
     }
   },
   computed: {
     ...mapGetters(["getUser", "getNum"])
-  },
-  watch: {
-    // 获取vuex的登录状态
-    getUser: function(val) {
-      if (val === "") {
-        // 用户没有登录
-        this.setShoppingCart([]);
-      } else {
-        // 用户已经登录,获取该用户的购物车信息
-        this.$axios
-          .post("/user/shoppingCart/getShoppingCart", {
-            user_id: val.user_id
-          })
-          .then(res => {
-            if (res.data.code === "001") {
-              // 001 为成功, 更新vuex购物车状态
-              this.setShoppingCart(res.data.shoppingCartData);
-            } else {
-              // 提示失败信息
-              this.notifyError(res.data.msg);
-            }
-          })
-          .catch(err => {
-            return Promise.reject(err);
-          });
-      }
-    }
   },
   methods: {
     ...mapActions(["setUser", "setShowLogin", "setShoppingCart"]),
