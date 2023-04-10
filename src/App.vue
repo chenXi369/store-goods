@@ -25,6 +25,9 @@
               </el-popover>
             </li>
             <li>
+              <router-link to="/scanList">浏览记录</router-link>
+            </li>
+            <li>
               <router-link to="/address">地址管理</router-link>
             </li>
             <li>

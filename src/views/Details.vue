@@ -6,7 +6,7 @@
     <!-- 头部 -->
     <div class="page-header">
       <div class="title">
-        <p>{{productDetails.name}}</p>
+        <p>{{productDetail.name}}</p>
         <div class="list">
           <ul>
             <li>
@@ -33,8 +33,8 @@
         <div v-if="productPicture.length==1">
           <img
             style="height:560px;"
-            :src="$target + productDetails.bannerImg"
-            :alt="productDetails.rotation"
+            :src="$target + productDetail.bannerImg"
+            :alt="productDetail.rotation"
           />
         </div>
       </div>
@@ -42,33 +42,33 @@
 
       <!-- 右侧内容区 -->
       <div class="content">
-        <h1 class="name">{{productDetails.name}}</h1>
-        <p class="intro">{{productDetails.remark}}</p>
+        <h1 class="name">{{productDetail.name}}</h1>
+        <p class="intro">{{productDetail.remark}}</p>
         <p class="store">小米自营</p>
         <div class="price">
-          <span>{{productDetails.price}}元</span>
+          <span>{{productDetail.price}}元</span>
           <span
-            v-show="productDetails.price != productDetails.price"
+            v-show="productDetail.price != productDetail.price"
             class="del"
-          >{{productDetails.price}}元</span>
+          >{{productDetail.price}}元</span>
         </div>
         
         <template v-if="baseInfo === 1">
           <div class="pro-list">
-            <span class="pro-name">{{productDetails.name}}</span>
+            <span class="pro-name">{{productDetail.name}}</span>
             <span class="pro-price">
-              <span>{{productDetails.price}}元</span>
+              <span>{{productDetail.price}}元</span>
               <span
-                v-show="productDetails.price != productDetails.price"
+                v-show="productDetail.price != productDetail.price"
                 class="pro-del"
-              >{{productDetails.price}}元</span>
+              >{{productDetail.price}}元</span>
             </span>
-            <p class="price-sum">总计 : {{productDetails.price}}元</p>
+            <p class="price-sum">总计 : {{productDetail.price}}元</p>
           </div>
           <!-- 内容区底部按钮 -->
           <div class="button">
             <!-- <el-button class="shop-cart" :disabled="dis" @click="addShoppingCart">加入购物车</el-button> -->
-            <el-button class="like" type="primary" @click="addCollect(productDetails.id)">收藏</el-button>
+            <el-button class="like" type="primary" @click="addCollect(productDetail.id)">收藏</el-button>
           </div>
 
           <!-- 内容区底部按钮END -->
@@ -104,13 +104,14 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-import { addLikeProdct } from '@/api/hasToken'
+
+import { addLikeProdct, addScanHistory } from '@/api/hasToken'
 export default {
   data() {
     return {
       dis: false, // 控制“加入购物车按钮是否可用”
       productId: "", // 商品id
-      productDetails: {}, // 商品详细信息
+      productDetail: {}, // 商品详细信息
       productPicture: [],
       baseInfo: 1
     }
@@ -139,10 +140,13 @@ export default {
           pageSize: 10
         })
         .then(res => {
-          this.productDetails = [ ...res.data.data.list ].find(item => {
+          this.productDetail = [ ...res.data.data.list ].find(item => {
             return item.id == this.productId
           })
-          this.productPicture = this.productDetails.bannerImg.split(',')
+          this.productPicture = this.productDetail.bannerImg.split(',')
+
+          // 同时把改浏览记录添加
+          addScanHistory(this.productDetail.id)
         })
         .catch(err => {
           return Promise.reject(err)

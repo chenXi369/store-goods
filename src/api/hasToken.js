@@ -67,3 +67,20 @@ export function updateAddress(data) {
     data
   })
 }
+
+// 浏览记录列表
+export function getScanHistory(data) {
+  return request({
+    url: '/browsingHistory/list',
+    method: 'post',
+    data
+  })
+}
+
+// 添加浏览记录
+export function addScanHistory(id) {
+  return request({
+    url: '/browsingHistory/add/' + id,
+    method: 'post'
+  })
+}
