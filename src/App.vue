@@ -21,7 +21,7 @@
                   <el-button size="mini" type="text" @click="visible = false">取消</el-button>
                   <el-button type="primary" size="mini" @click="logout">确定</el-button>
                 </div>
-                <el-button type="text" slot="reference">{{this.$store.getters.getUser.nickName}}</el-button>
+                <el-button type="text" slot="reference">[用户]</el-button>
               </el-popover>
             </li>
             <li>
@@ -140,10 +140,11 @@ export default {
     logout() {
       this.visible = false;
       // 清空本地登录信息
-      localStorage.setItem("user", "");
+      localStorage.setItem("user", "")
       // 清空vuex登录信息
-      this.setUser("");
-      this.notifySucceed("成功退出登录");
+      this.setUser("")
+      this.$router.push('/')
+      this.notifySucceed("成功退出登录")
     },
     // 接收注册子组件传过来的数据
     isRegister(val) {

@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.19.0",
     "core-js": "^3.4.3",
+    "element-china-area-data": "^5.0.2",
     "element-ui": "^2.13.0",
     "js-cookie": "^3.0.1",
     "vue": "^2.6.10",

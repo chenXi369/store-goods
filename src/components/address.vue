@@ -5,37 +5,25 @@
   <div id="myList" class="myList">
     <ul>
       <li v-for="item in list" :key="item.id">
-        <el-popover placement="top">
-          <p>
-            <i type="info" class="el-icon-warning"></i> 确定删除吗？
-          </p>
-          <div style="text-align: right; margin: 10px 0 0">
-            <el-button size="mini" @click="colsePopover">取消</el-button>
-            <el-button type="primary" size="mini" @click="deleteCollect(item.id)">确定</el-button>
-          </div>
-          <i class="el-icon-close delete" slot="reference" v-show="isDelete"></i>
-        </el-popover>
-        <router-link :to="{ path: '/goods/details', query: {productId: item.id} }">
-          <img :src="$target + item.bannerImg" alt />
-          <h2>{{item.name}}</h2>
-          <h3>{{item.remark}}</h3>
-          <p>
-            <span>{{item.price}}元</span>
-            <span class="del">{{item.price}}元</span>
-          </p>
-        </router-link>
-      </li>
-      <li v-show="isMore && list.length>=1" id="more">
-        <router-link :to="{ path: '/goods', query: {categoryId: categoryId} }">
-          浏览更多
-          <i class="el-icon-d-arrow-right"></i>
-        </router-link>
+        <el-card shadow="hover">
+          <el-row>
+            <el-col :span="20" style="line-height: 40px">
+              {{ item.areaName.replaceAll('/', '') }}{{ item.address }}
+            </el-col>
+            <el-col :span="4" style="text-align: right; padding: 0 20px;">
+              <el-button type="text"  icon="el-icon-edit"
+                @click="updateAddress(item)">修改</el-button>
+              <el-button style="color: red; margin-left: 20px;" icon="el-icon-delete"
+                type="text" @click="deleteAddress(item)">删除</el-button>
+            </el-col>
+          </el-row>          
+        </el-card>
       </li>
     </ul>
   </div>
 </template>
 <script>
-import { cancelLikeProduct } from '@/api/hasToken'
+import { delAddress } from '@/api/hasToken'
 
 export default {
   name: "MyList",
@@ -43,51 +31,40 @@ export default {
   // isMore为是否显示“浏览更多”
   props: ["list", "isMore", "isDelete"],
   data() {
-    return {};
-  },
-  computed: {
-    // 通过list获取当前显示的商品的分类ID，用于“浏览更多”链接的参数
-    categoryId: function() {
-      let categoryId = [];
-      if (this.list != "") {
-        for (let i = 0; i < this.list.length; i++) {
-          const id = this.list[i].category_id;
-          if (!categoryId.includes(id)) {
-            categoryId.push(id);
-          }
-        }
-      }
-      return categoryId;
-    }
+    return {}
   },
   methods: {
-    // 取消关注成功
-    deleteCollect(product_id) {
-      cancelLikeProduct(product_id).then(() => {
-        // 删除删除列表中的该商品信息
-        for (let i = 0; i < this.list.length; i++) {
-          const temp = this.list[i];
-          if (temp.id == product_id) {
-            this.list.splice(i, 1);
+    // 地址删除
+    deleteAddress(row) {
+      this.$confirm('是否确认删除该地址？', '提示', {
+        type: 'warning'
+      }).then(() => {
+        delAddress(row.id).then(() => {
+          // 删除删除列表中的该商品信息
+          for (let i = 0; i < this.list.length; i++) {
+            const temp = this.list[i];
+            if (temp.id == row.id) {
+              this.list.splice(i, 1);
+            }
           }
-        }
-        // 提示删除成功信息
-        this.notifySucceed('删除成功！')
+          // 提示删除成功信息
+          this.notifySucceed('删除成功！')
+        })
       })
     },
-    colsePopover() {
-
+    // 修改地址
+    updateAddress(row) {
+      this.$emit('updateCurAddress', row)
     }
   }
-};
+}
 </script>
 <style scoped>
 .myList ul li {
   z-index: 1;
   float: left;
-  width: 234px;
-  height: 280px;
-  padding: 10px 0;
+  width: 100%;
+  height: 80px;
   margin: 0 0 14.5px 13.7px;
   background-color: white;
   -webkit-transition: all 0.2s linear;
@@ -103,8 +80,8 @@ export default {
 }
 .myList ul li img {
   display: block;
-  width: 160px;
-  height: 160px;
+  width: 100%;
+  height: 80px;
   background: url(../assets/imgs/placeholder.png) no-repeat 50%;
   margin: 0 auto;
 }
