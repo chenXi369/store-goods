@@ -44,7 +44,7 @@
           :default-active="activeIndex"
           class="el-menu-demo"
           mode="horizontal"
-          active-text-color="#409eff"
+          active-text-color="#ff6700"
           router
         >
           <div class="logo">
@@ -54,7 +54,7 @@
           </div>
           <el-menu-item index="/">首页</el-menu-item>
           <el-menu-item index="/goods">全部商品</el-menu-item>
-          <el-menu-item index="/about">关于我们</el-menu-item>
+          <el-menu-item index="/about">社区留言</el-menu-item>
 
           <div class="so">
             <el-input placeholder="请输入搜索内容" v-model="search">
@@ -96,7 +96,7 @@
               <span>|</span>
               <router-link to="/goods">全部商品</router-link>
               <span>|</span>
-              <router-link to="/about">关于我们</router-link>
+              <router-link to="/about">社区留言</router-link>
             </p>
             <p class="coty">商城版权所有 &copy; 2023</p>
           </div>

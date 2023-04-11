@@ -11,7 +11,9 @@ import router from './router'
 import store from './store'
 
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+import 'element-ui/lib/theme-chalk/index.css'
+import './assets/css/element-variables.scss'
+
 Vue.use(ElementUI);
 
 // 全局函数及变量
