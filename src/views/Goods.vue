@@ -24,7 +24,7 @@
             v-for="item in categoryList"
             :key="item.id"
             :label="item.name"
-            :name="''+item.id"
+            :name="item.name"
           />
         </el-tabs>
       </div>
@@ -42,7 +42,7 @@
         <el-pagination
           background
           layout="prev, pager, next"
-          :page-size="pageSize"
+          :page-size="goodParams.pageSize"
           :total="total"
           @current-change="currentChange"
         ></el-pagination>
@@ -103,22 +103,11 @@ export default {
     }
   },
   watch: {
-    // 监听点击了哪个分类标签，通过修改分类id，响应相应的商品
     activeName: function(val) {
-      if (val == 0) {
-        this.categoryId = null
-      }
-      if (val > 0) {
-        this.categoryId = Number(val)
-      }
-      // 初始化商品总量和当前页码
-      this.total = 0;
-      this.currentPage = 1;
-      // 更新地址栏链接，方便刷新页面可以回到原来的页面
-      this.$router.push({
-        path: "/goods",
-        query: { categoryId: this.categoryId }
-      });
+      this.categoryId = this.categoryList.find(item => {
+        return item.name == val
+      }).id
+      this.getData()
     },
     // 监听搜索条件，响应相应的商品
     search: function(val) {
@@ -128,8 +117,8 @@ export default {
     },
     // 监听分类id，响应相应的商品
     categoryId: function() {
-      this.getData();
-      this.search = "";
+      this.getData()
+      this.search = ""
     },
     // 监听路由变化，更新路由传递了搜索条件
     $route: function(val) {
@@ -161,11 +150,11 @@ export default {
     currentChange(currentPage) {
       this.currentPage = currentPage;
       if (this.search != "") {
-        this.getProductBySearch();
+        this.getProductBySearch()
       } else {
-        this.getData();
+        this.getData()
       }
-      this.backtop();
+      this.backtop()
     },
     // 向后端请求分类列表数据
     getCategory() {
@@ -176,10 +165,9 @@ export default {
             name: "全部"
           }
           const cate = res.data.data.list
-          console.log(cate)
           cate.unshift(val)
           this.categoryList = cate
-
+          this.activeName = this.categoryList[0].name
           this.getData()
         })
         .catch(err => {
@@ -189,15 +177,18 @@ export default {
     // 向后端请求全部商品或分类商品数据
     getData() {
       // 如果分类列表为空则请求全部商品数据，否则请求分类商品数据
+      const data = {
+        pageNum: this.goodParams.pageNum,
+        pageSize: this.goodParams.pageSize
+      }
+      if(this.categoryId) {
+        data.categoryId = this.categoryId
+      }
       this.$axios
-        .post('/product/list', {
-          categoryId: this.categoryId,
-          pageNum: this.goodParams.pageNum,
-          pageSize: this.goodParams.pageSize
-        })
+        .post('/product/list', {...data})
         .then(res => {
           this.product = [...res.data.data.list]
-          this.total = res.data.total
+          this.total = res.data.data.total
         })
         .catch(err => {
           return Promise.reject(err);

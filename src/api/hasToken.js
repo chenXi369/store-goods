@@ -84,3 +84,21 @@ export function addScanHistory(id) {
     method: 'post'
   })
 }
+
+// 新增留言
+export function addMessage(data) {
+  return request({
+    url: '/message/add',
+    method: 'post',
+    data
+  })
+}
+
+// 获取留言列表
+export function getMessages(data) {
+  return request({
+    url: '/message/list',
+    method: 'post',
+    data
+  })
+}

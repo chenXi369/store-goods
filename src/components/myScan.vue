@@ -8,7 +8,7 @@
         <el-card shadow="hover">
           <el-row>
             <el-col :span="6">
-              <img :src="item.productImg" alt />
+              <img :src="$target + item.productImg" alt />
             </el-col>
             <el-col :span="18" style="line-height: 40px">
               <p>
@@ -40,7 +40,7 @@ export default {
 .myList ul li {
   z-index: 1;
   float: left;
-  width: 50%;
+  width: 48%;
   height: 120px;
   margin: 0 0 14.5px 13.7px;
   background-color: white;

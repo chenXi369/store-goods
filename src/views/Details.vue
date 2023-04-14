@@ -32,7 +32,7 @@
         </el-carousel>
         <div v-if="productPicture.length==1">
           <img
-            style="height:560px;"
+            style="height:560px; width: 100%;"
             :src="$target + productDetail.bannerImg"
             :alt="productDetail.rotation"
           />
