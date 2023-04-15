@@ -86,7 +86,7 @@
             <p>
               <router-link to="/">首页</router-link>
               <span>|</span>
-              <router-link to="/goods">全部商品</router-link>
+              <router-link to="/goods">全部产品</router-link>
               <span>|</span>
               <router-link to="/about">社区留言</router-link>
             </p>

@@ -8,9 +8,6 @@
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item to="/">首页</el-breadcrumb-item>
         <el-breadcrumb-item>全部商品</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="search">搜索</el-breadcrumb-item>
-        <el-breadcrumb-item v-else>分类</el-breadcrumb-item>
-        <el-breadcrumb-item v-if="search">{{search}}</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <!-- 面包屑END -->
@@ -18,10 +15,9 @@
     <!-- 分类标签 -->
     <div class="nav">
       <div class="product-nav">
-        <div class="title">分类</div>
         <el-tabs v-model="activeName" type="card">
           <el-tab-pane
-            v-for="item in categoryList"
+            v-for="item in tabList"
             :key="item.id"
             :label="item.name"
             :name="item.name"
@@ -33,6 +29,11 @@
 
     <!-- 主要内容区 -->
     <div class="main">
+      <ul class="sidebar">
+        <li v-for="item in categoryList" :key="item.id" class="side-item"
+        :class="{'active-bar': categoryId === item.id}" @click="selectCurCate(item)"
+        >{{ item.name }}</li>
+      </ul>
       <div class="list">
         <MyList :list="product" v-if="product.length>0"></MyList>
         <div v-else class="none-product">抱歉没有找到相关的商品，请看看其他的商品</div>
@@ -56,14 +57,18 @@
 export default {
   data() {
     return {
+      tabList: [
+        { id: 0, name: '全部产品' },
+        { id: 1, name: '待测产品' },
+        { id: 2, name: '已测产品' }
+      ],
       categoryList: "", //分类列表
       categoryId: null, // 分类id
       product: "", // 商品列表
       productList: "",
 
       total: 0, // 商品总量
-      activeName: "-1", // 分类列表当前选中的id
-      search: "", // 搜索条件,
+      activeName: "全部产品", // 分类列表当前选中的id
 
       queryParams: {
         pageSize: 10,
@@ -80,54 +85,41 @@ export default {
     this.getCategory()
   },
   activated() {
-    this.activeName = "-1"; // 初始化分类列表当前选中的id为-1
     this.total = 0; // 初始化商品总量为0
     this.currentPage = 1; //初始化当前页码为1
     // 如果路由没有传递参数，默认为显示全部商品
     if (Object.keys(this.$route.query).length == 0) {
       this.categoryId = null
-      this.activeName = "0"
       return
     }
     // 如果路由传递了categoryId，则显示对应的分类商品
     if (this.$route.query.categoryId != undefined) {
       this.categoryId = this.$route.query.categoryId
       if (this.categoryId.length == 1) {
-        this.activeName = "" + this.categoryId[0]
+        this.activeSort = "" + this.categoryId[0]
       }
-      return;
-    }
-    // 如果路由传递了search，则为搜索，显示对应的分类商品
-    if (this.$route.query.search != undefined) {
-      this.search = this.$route.query.search;
+      return
     }
   },
   watch: {
     activeName: function(val) {
-      this.categoryId = this.categoryList.find(item => {
-        return item.name == val
-      }).id
-      this.getData()
-    },
-    // 监听搜索条件，响应相应的商品
-    search: function(val) {
-      if (val != "") {
-        this.getProductBySearch(val);
-      }
+      console.log(val)
+      // this.categoryId = this.categoryList.find(item => {
+      //   return item.name == val
+      // }).id
+      // this.getData()
     },
     // 监听分类id，响应相应的商品
     categoryId: function() {
       this.getData()
-      this.search = ""
     },
     // 监听路由变化，更新路由传递了搜索条件
     $route: function(val) {
       if (val.path == "/goods") {
         if (val.query.search != undefined) {
-          this.activeName = "-1";
-          this.currentPage = 1;
-          this.total = 0;
-          this.search = val.query.search;
+          this.activeName = "全部产品"
+          this.currentPage = 1
+          this.total = 0
         }
       }
     }
@@ -149,12 +141,12 @@ export default {
     // 页码变化调用currentChange方法
     currentChange(currentPage) {
       this.currentPage = currentPage;
-      if (this.search != "") {
-        this.getProductBySearch()
-      } else {
-        this.getData()
-      }
+      this.getData()
       this.backtop()
+    },
+    // 产品分类的修改
+    selectCurCate(row) {
+      this.categoryId = row.id
     },
     // 向后端请求分类列表数据
     getCategory() {
@@ -167,7 +159,7 @@ export default {
           const cate = res.data.data.list
           cate.unshift(val)
           this.categoryList = cate
-          this.activeName = this.categoryList[0].name
+          // this.activeName = this.categoryList[0].name
           this.getData()
         })
         .catch(err => {
@@ -191,14 +183,13 @@ export default {
           this.total = res.data.data.total
         })
         .catch(err => {
-          return Promise.reject(err);
-        });
+          return Promise.reject(err)
+        })
     },
     // 通过搜索条件向后端请求商品数据
     getProductBySearch() {
       this.$axios
         .post("/api/product/getProductBySearch", {
-          search: this.search,
           pageNum: this.goodParams.pageNum,
           pageSize: this.goodParams.pageSize
         })
@@ -214,7 +205,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .goods {
   background-color: #f5f5f5;
 }
@@ -254,13 +245,47 @@ export default {
 
 /* 主要内容区CSS */
 .goods .main {
+  padding-top: 4px;
   margin: 0 auto;
   max-width: 1225px;
+  clear: both;
+
+  .sidebar {
+    background: #ffffff;
+    width: 220px;
+    min-height: 650px;
+    float: left;
+
+    .side-item {
+      box-sizing: border-box;
+      width: 100%;
+      color: #666;
+      font-size: 16px;
+      height: 56px;
+      line-height: 36px;
+      cursor: pointer;
+      padding: 10px 20px;
+      border-bottom: 1px solid #eaeaea;
+
+      &:hover {
+        background: #ff6700;
+        opacity: 0.5;
+        color: #fff;
+      }
+    }
+
+    .active-bar {
+      background: #ff6700;
+      opacity: 0.8;
+      color: #fff;
+    }
+  }
 }
 .goods .main .list {
   min-height: 650px;
   padding-top: 14.5px;
-  margin-left: -13.7px;
+  margin-left: 210px;
+  margin-right: 0;
   overflow: auto;
 }
 .goods .main .pagination {
