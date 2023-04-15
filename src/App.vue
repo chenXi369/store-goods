@@ -49,7 +49,7 @@
         >
           <div class="logo">
             <router-link to="/">
-              <img src="./assets/imgs/logo.png" alt />
+              <span style="color: #ff6700;">Strry sky</span>
             </router-link>
           </div>
           <el-menu-item index="/">首页</el-menu-item>
@@ -245,6 +245,9 @@ a:hover {
   margin: 0 auto;
 }
 .el-header .logo {
+  font-size: 40px;
+  font-weight: 600;
+  font-family: Georgia, 'Times New Roman', Times, serif;
   height: 60px;
   width: 189px;
   float: left;

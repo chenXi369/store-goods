@@ -120,7 +120,7 @@ export default {
       rules: {
         name: [{ validator: validateName, trigger: "blur" }],
         pass: [{ validator: validatePass, trigger: "blur" }],
-        nickName: [{ required: true, message: '请输入分类', trigger: 'blur' }],
+        nickName: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
         confirmPass: [{ validator: validateConfirmPass, trigger: "blur" }]
       }
     }

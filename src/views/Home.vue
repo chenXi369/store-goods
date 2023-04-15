@@ -10,8 +10,8 @@
     <!-- 轮播图 -->
     <div class="block">
       <el-carousel height="460px">
-        <el-carousel-item v-for="item in carousel" :key="item.carousel_id">
-          <img style="height:460px;" :src="$target + item.imgPath" :alt="item.describes" />
+        <el-carousel-item v-for="item in carousel" :key="item.id">
+          <img style="height:460px;" :src="item.imgPath" alt />
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -19,23 +19,21 @@
 
     <div class="main-box">
       <div class="main">
-        <!-- 手机商品展示区域 -->
         <div class="phone" v-for="tab in goodTabs" :key="tab.id">
           <div class="box-hd">
             <div class="title">{{ tab.name }}</div>
           </div>
           <div class="box-bd">
-            <div class="promo-list">
+            <!-- <div class="promo-list">
               <router-link to>
                 <img :src="$target +'public/imgs/phone/phone.png'" />
               </router-link>
-            </div>
+            </div> -->
             <div class="list">
               <MyList :list="phoneList" :isMore="true"></MyList>
             </div>
           </div>
         </div>
-        <!-- 手机商品展示区域END -->
       </div>
     </div>
   </div>
@@ -44,7 +42,7 @@
 export default {
   data() {
     return {
-      carousel: "", // 轮播图数据
+      carousel: [], // 轮播图数据
       phoneList: "", // 手机商品列表
       miTvList: "", // 小米电视商品列表
       applianceList: "", // 家电商品列表
@@ -56,7 +54,11 @@ export default {
       applianceActive: 1, // 家电当前选中的商品分类
       accessoryActive: 1, // 配件当前选中的商品分类
 
-      goodTabs: [] 
+      goodTabs: [],
+      queryParams: {
+        pageNum: 1,
+        pageSize: 5
+      }
     }
   },
   watch: {
@@ -91,13 +93,13 @@ export default {
       }
       if (val == 2) {
         // 2为保护套商品
-        this.accessoryList = this.protectingShellList;
+        this.accessoryList = this.protectingShellList
         return;
       }
       if (val == 3) {
         //3 为充电器商品
-        this.accessoryList = this.chargerList;
-        return;
+        this.accessoryList = this.chargerList
+        return
       }
     }
   },
@@ -105,11 +107,17 @@ export default {
     // 获取轮播图数据(推荐商品)
     this.$axios
       .post('/product/recommend')
-      .then(res => {
-        this.carousel = [ ...res.data.data.list ]
+      .then(() => {
+        this.carousel = [
+          { id: 1, imgPath: require('@/assets/swiper/1.jpg') },
+          { id: 2, imgPath: require('@/assets/swiper/2.jpg') },
+          { id: 3, imgPath: require('@/assets/swiper/3.jpg') },
+          { id: 4, imgPath: require('@/assets/swiper/4.jpg') },
+          { id: 5, imgPath: require('@/assets/swiper/5.jpg') },
+        ]
       })
       .catch(err => {
-        return Promise.reject(err);
+        return Promise.reject(err)
       })
     // 先获取商品分类
     this.getGoodCate()
@@ -141,8 +149,12 @@ export default {
     // 获取各类商品数据方法封装
     getPromo(val, api) {
       api = api != undefined ? api : '/product/list'
+      const data = {
+        pageNum: this.queryParams.pageNum,
+        pageSize: this.queryParams.pageSize
+      }
       this.$axios
-        .post(api)
+        .post(api, { ...data })
         .then(res => {
           this[val] = [ ...res.data.list ]
         })
