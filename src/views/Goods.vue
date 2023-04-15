@@ -159,7 +159,7 @@ export default {
           const cate = res.data.data.list
           cate.unshift(val)
           this.categoryList = cate
-          // this.activeName = this.categoryList[0].name
+          this.categoryId = this.categoryList[0].id
           this.getData()
         })
         .catch(err => {
