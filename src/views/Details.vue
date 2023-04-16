@@ -44,13 +44,15 @@
       <div class="content">
         <h1 class="name">{{productDetail.name}}</h1>
         <p class="intro">{{productDetail.remark}}</p>
-        <p class="store">小米自营</p>
+        <p class="store">{{ productDetail.brand }}</p>
         <div class="price">
           <span>{{productDetail.price}}元</span>
           <span
             v-show="productDetail.price != productDetail.price"
             class="del"
           >{{productDetail.price}}元</span>
+
+          <div class="remark" v-html="productDetail.detail"></div>
         </div>
         
         <template v-if="baseInfo === 1">
@@ -88,7 +90,7 @@
 import { mapActions } from 'vuex'
 import { getToken } from '@/utils/auth'
  
-import { addLikeProdct, addScanHistory } from '@/api/hasToken'
+import { addLikeProdct, addScanHistory, getCommentList, addComment } from '@/api/hasToken'
 export default {
   data() {
     return {
@@ -96,7 +98,11 @@ export default {
       productId: "", // 商品id
       productDetail: {}, // 商品详细信息
       productPicture: [],
-      baseInfo: 1
+      baseInfo: 1,
+      queryParams: {
+        pageNum: 1,
+        pageSize: 10
+      }
     }
   },
   // 通过路由获取商品id
@@ -118,24 +124,35 @@ export default {
     // 获取商品详细信息
     getDetails() {
       this.$axios
-        .post('/product/list', {
+        .post('/product/' + this.productId, {
           pageNum: 1,
           pageSize: 10
         })
         .then(res => {
-          this.productDetail = [ ...res.data.data.list ].find(item => {
-            return item.id == this.productId
-          })
+          this.productDetail = { ...res.data.data }
           this.productPicture = this.productDetail.bannerImg.split(',')
 
           // 同时把改浏览记录添加
           if(getToken()) {
             addScanHistory(this.productDetail.id)
-          }  
+          }
+          // 获取评论列表
+          this.getCommentList(this.productDetail.id)
         })
         .catch(err => {
           return Promise.reject(err)
         })
+    },
+    // 获取评论列表
+    getCommentList(id) {
+      const data = {
+        categoryId: id,
+        pageNum: this.queryParams.pageNum,
+        pageSize: this.queryParams.pageSize
+      }
+      getCommentList(data).then(res => {
+        console.log(res.data)
+      })
     },
     addCollect(id) {
       // 判断是否登录,没有登录则显示登录组件
@@ -154,6 +171,11 @@ export default {
         }
       }).catch(err => {
         return Promise.reject(err)
+      })
+    },
+    addComment() {
+      addComment().then(() => {
+        this.notifySucceed('评论成功')
       })
     }
   }
@@ -241,8 +263,15 @@ export default {
   font-size: 18px;
   color: #ff6700;
   border-bottom: 1px solid #e0e0e0;
-  padding: 25px 0 25px;
+  padding: 15px 0 25px; 
 }
+#details .main .content .price .remark {
+  margin-top: 8px;
+  color: #666;
+  max-height: 100px;
+  overflow-y: scroll;
+}
+
 #details .main .content .price .del {
   font-size: 14px;
   margin-left: 10px;

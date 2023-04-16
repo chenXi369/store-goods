@@ -75,8 +75,9 @@ export default {
         pageNum: 1
       },
       goodParams: {
-        pageSize: 15,
-        pageNum: 1
+        pageSize: 12,
+        pageNum: 1,
+        status: null
       }
     };
   },
@@ -103,11 +104,8 @@ export default {
   },
   watch: {
     activeName: function(val) {
-      console.log(val)
-      // this.categoryId = this.categoryList.find(item => {
-      //   return item.name == val
-      // }).id
-      // this.getData()
+      this.goodParams.status = (val == '全部产品' ? '' : val == '待测产品' ? 0 : 1)
+      this.getData()
     },
     // 监听分类id，响应相应的商品
     categoryId: function() {
@@ -171,7 +169,8 @@ export default {
       // 如果分类列表为空则请求全部商品数据，否则请求分类商品数据
       const data = {
         pageNum: this.goodParams.pageNum,
-        pageSize: this.goodParams.pageSize
+        pageSize: this.goodParams.pageSize,
+        status: this.goodParams.status
       }
       if(this.categoryId) {
         data.categoryId = this.categoryId

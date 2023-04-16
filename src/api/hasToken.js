@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+// 获取产品详情
+export function getProductDetail(id) {
+  return request({
+    url: '/product/' + id,
+    method: 'post'
+  })
+}
+
 // 获取收藏列表
 export function getLikeProduct(data) {
   return request({
@@ -21,14 +29,6 @@ export function addLikeProdct(id) {
 export function cancelLikeProduct(id) {
   return request({
     url: `/product/cancelLike/${id}`,
-    method: 'post'
-  })
-}
-
-// 获取评论列表
-export function getCommentList() {
-  return request({
-    url: `/comment/list`,
     method: 'post'
   })
 }
@@ -100,5 +100,31 @@ export function getMessages(data) {
     url: '/message/list',
     method: 'post',
     data
+  })
+}
+
+// 新增评论
+export function addComment(data) {
+  return request({
+    url: '/comment/add',
+    method: 'post',
+    data
+  })
+}
+
+// 获取评论列表
+export function getCommentList(data) {
+  return request({
+    url: '/comment/list',
+    method: 'post',
+    data
+  })
+}
+
+// 删除评论
+export function delComment(id) {
+  return request({
+    url: '/comment/del/' + id,
+    method: 'post'
   })
 }
