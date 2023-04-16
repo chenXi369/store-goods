@@ -90,7 +90,7 @@
               <span>|</span>
               <router-link to="/about">社区留言</router-link>
             </p>
-            <p class="coty">商城版权所有 &copy; 2023</p>
+            <p class="coty">版权所有 &copy; 2023</p>
           </div>
         </div>
       </el-footer>

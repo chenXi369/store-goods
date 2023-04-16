@@ -46,6 +46,7 @@
 import { addMessage, getMessages } from '@/api/hasToken.js'
 import comment from 'bright-comment'
 import MsgBox from '@/components/msgBox.vue'
+import { getToken } from '@/utils/auth'
 
 export default {
   data() {
@@ -76,10 +77,14 @@ export default {
     },
     doSend(e) {
       const data = { message: e }
-      addMessage(data).then(() => {
-        this.$message.success('留言成功！')
-        this.getMessageList()
-      }) 
+      if(getToken()) {
+        addMessage(data).then(() => {
+          this.$message.success('留言成功！')
+          this.getMessageList()
+        })
+      } else {
+        this.$message.error('请先登录')
+      }
     },
     // 翻页的处理
     currentChange() {

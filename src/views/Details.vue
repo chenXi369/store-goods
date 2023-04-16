@@ -70,24 +70,6 @@
             <!-- <el-button class="shop-cart" :disabled="dis" @click="addShoppingCart">加入购物车</el-button> -->
             <el-button class="like" type="primary" @click="addCollect(productDetail.id)">收藏</el-button>
           </div>
-
-          <!-- 内容区底部按钮END -->
-          <div class="pro-policy">
-            <ul>
-              <li>
-                <i class="el-icon-circle-check"></i> 小米自营
-              </li>
-              <li>
-                <i class="el-icon-circle-check"></i> 小米发货
-              </li>
-              <li>
-                <i class="el-icon-circle-check"></i> 7天无理由退货
-              </li>
-              <li>
-                <i class="el-icon-circle-check"></i> 7天价格保护
-              </li>
-            </ul>
-          </div>
         </template>
 
         <template v-else>
@@ -104,7 +86,8 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
-
+import { getToken } from '@/utils/auth'
+ 
 import { addLikeProdct, addScanHistory } from '@/api/hasToken'
 export default {
   data() {
@@ -146,7 +129,9 @@ export default {
           this.productPicture = this.productDetail.bannerImg.split(',')
 
           // 同时把改浏览记录添加
-          addScanHistory(this.productDetail.id)
+          if(getToken()) {
+            addScanHistory(this.productDetail.id)
+          }  
         })
         .catch(err => {
           return Promise.reject(err)
@@ -306,11 +291,11 @@ export default {
 }
 
 #details .main .content .button .like {
+  opacity: 0.8;
   width: 100%;
-  background-color: #b0b0b0;
 }
 #details .main .content .button .like:hover {
-  background-color: #757575;
+  opacity: 0.5;
 }
 #details .main .content .pro-policy li {
   float: left;

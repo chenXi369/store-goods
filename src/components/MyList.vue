@@ -21,7 +21,7 @@
           <h3>{{item.remark}}</h3>
           <p>
             <span>{{item.price}}元</span>
-            <span class="del">{{item.price}}元</span>
+            <!-- <span class="del">{{item.price}}元</span> -->
           </p>
         </router-link>
       </li>
