@@ -53,7 +53,7 @@
             </router-link>
           </div>
           <el-menu-item index="/">首页</el-menu-item>
-          <el-menu-item index="/goods">全部商品</el-menu-item>
+          <el-menu-item index="/goods">全部产品</el-menu-item>
           <el-menu-item index="/about">社区留言</el-menu-item>
 
           <div class="so">

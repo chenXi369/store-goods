@@ -1,5 +1,5 @@
 <!--
- * @Description: 列表组件，用于首页、全部商品页面的商品列表
+ * @Description: 列表组件，用于首页、全部产品页面的商品列表
  -->
  <template>
   <div id="myList" class="myList">
