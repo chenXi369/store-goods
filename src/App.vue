@@ -56,11 +56,11 @@
           <el-menu-item index="/goods">全部产品</el-menu-item>
           <el-menu-item index="/about">社区留言</el-menu-item>
 
-          <div class="so">
+          <!-- <div class="so">
             <el-input placeholder="请输入搜索内容" v-model="search">
               <el-button slot="append" icon="el-icon-search" @click="searchClick"></el-button>
             </el-input>
-          </div>
+          </div> -->
         </el-menu>
       </el-header>
       <!-- 顶栏容器END -->

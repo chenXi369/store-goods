@@ -77,7 +77,18 @@
         <template v-else>
           <h3 style="margin: 8px 5px">用户评论</h3>
           <div class="commen-list">
-            
+            <div v-if="total == 0">
+              暂无评论
+            </div>
+            <template v-else>
+              <div class="comment-item" v-for="item in commentList" :key="item.id">
+                <p>
+                  <img :src="$target + item.avatar">
+                  <span>{{ item.name }}</span>
+                </p>
+                <p>{{ item }}</p>
+              </div>
+            </template>
           </div>
         </template>
       </div>
@@ -102,7 +113,9 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10
-      }
+      },
+      total: 0,
+      commentList: []
     }
   },
   // 通过路由获取商品id
@@ -146,12 +159,14 @@ export default {
     // 获取评论列表
     getCommentList(id) {
       const data = {
-        categoryId: id,
+        id: id,
         pageNum: this.queryParams.pageNum,
         pageSize: this.queryParams.pageSize
       }
       getCommentList(data).then(res => {
         console.log(res.data)
+        this.commentList = [...res.data.data]
+        this.total = res.data.total
       })
     },
     addCollect(id) {
@@ -330,6 +345,15 @@ export default {
   float: left;
   margin-right: 20px;
   color: #b0b0b0;
+}
+
+.comment-list {
+  padding: 15px;
+}
+
+.comment-item {
+  width: 100%;
+  min-height: 60px;
 }
 /* 主要内容CSS END */
 </style>
