@@ -11,9 +11,22 @@
       </div>
     </div>
     <div class="content">
-      <div class="goods-list" v-if="scanList.length > 0">
-        <MyScan :list="scanList"></MyScan>
-      </div>
+      <template v-if="scanList.length > 0">
+        <div class="goods-list">
+          <MyScan :list="scanList"></MyScan>
+        </div>
+
+        <div class="pagination">
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :page-size="queryParams.pageSize"
+            :total="total"
+            @current-change="currentChange"
+          ></el-pagination>
+        </div>
+      </template>
+      
       <!-- 收藏列表为空的时候显示的内容 -->
       <div v-else class="collect-empty">
         <div class="empty">
@@ -56,6 +69,9 @@ export default {
       }).catch(err => {
         return Promise.reject(err)
       })
+    },
+    currentChange() {
+      this.getAddressList()
     }
   }
 }
@@ -80,10 +96,18 @@ export default {
 }
 
 .collect .content {
-  padding: 20px 0;
+  padding-top: 20px;
   width: 1225px;
-  min-height: 400px;
+  min-height: 540px;
   margin: 0 auto;
+}
+
+.collect .content .pagination {
+  text-align: center;
+  width: 100%;
+  height: 50px;
+  line-height: 50px;
+  margin: 10px 0;
 }
 
 .collect .content .goods-list {

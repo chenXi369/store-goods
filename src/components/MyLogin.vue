@@ -24,7 +24,8 @@
   </div>
 </template>
 <script>
-import { mapActions } from "vuex";
+import { mapActions } from "vuex"
+import { getUserInfo } from '@/api/hasToken'
 
 export default {
   name: "MyLogin",
@@ -33,16 +34,10 @@ export default {
     let validateName = (rule, value, callback) => {
       if (!value) {
         return callback(new Error("请输入用户名"));
-      }
-      // 用户名以字母开头,长度在5-16之间,允许字母数字下划线
-      const userNameRule = /^[a-zA-Z][a-zA-Z0-9_]{4,15}$/;
-      if (userNameRule.test(value)) {
-        this.$refs.ruleForm.validateField("checkPass");
-        return callback();
       } else {
-        return callback(new Error("字母开头,长度5-16之间,允许字母数字下划线"));
+        callback()
       }
-    };
+    }
     // 密码的校验方法
     let validatePass = (rule, value, callback) => {
       if (value === "") {
@@ -51,8 +46,8 @@ export default {
       // 密码以字母开头,长度在6-18之间,允许字母数字和下划线
       const passwordRule = /^[a-zA-Z]\w{4,16}$/;
       if (passwordRule.test(value)) {
-        this.$refs.ruleForm.validateField("checkPass");
-        return callback();
+        this.$refs.ruleForm.validateField("checkPass")
+        return callback()
       } else {
         return callback(
           new Error("字母开头,长度5-17之间,允许字母数字和下划线")
@@ -103,6 +98,8 @@ export default {
                 localStorage.setItem("user", user)
                 // 登录信息存到vuex
                 this.setUser(res.data.data)
+
+                this.getUserInfo()
                 // 弹出通知框提示登录成功信息
                 this.notifySucceed('登录成功！')
               } else {
@@ -119,9 +116,15 @@ export default {
           return false
         }
       })
+    },
+    // 获取用户信息
+    getUserInfo() {
+      getUserInfo().then(res => {
+        localStorage.setItem("userInfo", JSON.stringify(res.data))
+      })
     }
   }
-};
+}
 </script>
 <style>
 </style>

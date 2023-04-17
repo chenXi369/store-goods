@@ -1,5 +1,13 @@
 import request from '@/utils/request'
 
+// 获取用户信息
+export function getUserInfo() {
+  return request({
+    url: '/user/info',
+    method: 'post'
+  })
+}
+
 // 获取产品详情
 export function getProductDetail(id) {
   return request({
@@ -104,7 +112,7 @@ export function getMessages(data) {
 }
 
 // 新增评论
-export function addComment(data) {
+export function addCommentItem(data) {
   return request({
     url: '/comment/add',
     method: 'post',

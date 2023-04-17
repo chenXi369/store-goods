@@ -75,7 +75,7 @@ export default {
         pageNum: 1
       },
       goodParams: {
-        pageSize: 12,
+        pageSize: 8,
         pageNum: 1,
         status: null
       }
@@ -138,9 +138,12 @@ export default {
     },
     // 页码变化调用currentChange方法
     currentChange(currentPage) {
-      this.currentPage = currentPage;
+      this.goodParams.pageNum = currentPage
       this.getData()
-      this.backtop()
+      const timer = setTimeout(() => {
+        this.backtop()
+        clearTimeout(timer)
+      }, 1000)
     },
     // 产品分类的修改
     selectCurCate(row) {
@@ -201,7 +204,7 @@ export default {
         });
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -252,7 +255,7 @@ export default {
   .sidebar {
     background: #ffffff;
     width: 220px;
-    min-height: 650px;
+    min-height: 680px;
     float: left;
 
     .side-item {
@@ -288,7 +291,8 @@ export default {
   overflow: auto;
 }
 .goods .main .pagination {
-  height: 50px;
+  margin-top: -10px;
+  height: 40px;
   text-align: center;
 }
 .goods .main .none-product {

@@ -77,6 +77,12 @@
         <template v-else>
           <h3 style="margin: 8px 5px">用户评论</h3>
           <div class="commen-list">
+            <section>
+              <el-input type="textarea" v-model="userComment"></el-input>
+              <div style="text-align: right; margin-top: 12px;">
+                <el-button size="mini" type="primary" @click="addUserComment">评论</el-button>
+              </div>
+            </section>
             <div v-if="total == 0">
               暂无评论
             </div>
@@ -101,7 +107,7 @@
 import { mapActions } from 'vuex'
 import { getToken } from '@/utils/auth'
  
-import { addLikeProdct, addScanHistory, getCommentList, addComment } from '@/api/hasToken'
+import { addLikeProdct, addScanHistory, getCommentList, addCommentItem } from '@/api/hasToken'
 export default {
   data() {
     return {
@@ -115,14 +121,15 @@ export default {
         pageSize: 10
       },
       total: 0,
-      commentList: []
+      commentList: [],
+      userComment: null
     }
   },
   // 通过路由获取商品id
   activated() {
     if (this.$route.query.productId != undefined) {
       this.productId = this.$route.query.productId
-
+      this.userComment = null
       this.getDetails()
     }
   },
@@ -164,7 +171,6 @@ export default {
         pageSize: this.queryParams.pageSize
       }
       getCommentList(data).then(res => {
-        console.log(res.data)
         this.commentList = [...res.data.data]
         this.total = res.data.total
       })
@@ -188,9 +194,21 @@ export default {
         return Promise.reject(err)
       })
     },
-    addComment() {
-      addComment().then(() => {
+    addUserComment() {
+      // 判断是否登录,没有登录则显示登录组件
+      if (!this.$store.getters.getUser) {
+        this.$store.dispatch("setShowLogin", true)
+        return
+      }
+      console.log()
+      const data = {
+        content: this.userComment,
+        productId: this.productId,
+        userAvatar: JSON.parse(localStorage.getItem('userInfo')).avatar
+      }
+      addCommentItem(data).then(() => {
         this.notifySucceed('评论成功')
+        this.getCommentList()
       })
     }
   }
@@ -281,10 +299,12 @@ export default {
   padding: 15px 0 25px; 
 }
 #details .main .content .price .remark {
-  margin-top: 8px;
-  color: #666;
-  max-height: 100px;
+  font-size: 14px;
+  margin-top: 10px;
+  color: #999;
+  overflow: hidden;
   overflow-y: scroll;
+  max-height: 100px;
 }
 
 #details .main .content .price .del {

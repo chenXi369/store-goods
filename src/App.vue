@@ -158,6 +158,31 @@ export default {
 </script>
 
 <style>
+/*定义滚动条高宽及背景
+高宽分别对应横竖滚动条的尺寸*/
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(30,30,30,.1);
+}
+
+/*定义滚动条轨道
+内阴影+圆角*/
+::-webkit-scrollbar-track
+{
+    -webkit-box-shadow:inset 0 0 6px rgba(30,30,30,0.2);
+    border-radius:10px;
+    background-color:#F5F5F5;
+}
+/*定义滑块
+  内阴影+圆角*/
+::-webkit-scrollbar-thumb
+{
+    border-radius:10px;
+    -webkit-box-shadow:inset 0 0 6px rgba(30,30,30,.2);
+    background-color: #b3b3b3;
+}
+
 /* 全局CSS */
 * {
   padding: 0;

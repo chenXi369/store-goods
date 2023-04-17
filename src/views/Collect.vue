@@ -38,7 +38,7 @@ export default {
         pageNum: 1,
         pageSize: 10
       }
-    };
+    }
   },
   activated() {
     // 获取收藏数据
