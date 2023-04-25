@@ -43,7 +43,7 @@
       <!-- 右侧内容区 -->
       <div class="content">
         <h1 class="name">{{productDetail.name}}</h1>
-        <p class="intro">{{productDetail.remark}}</p>
+        <p class="intro">{{productDetail.remark}} (评分：{{ productDetail.score ? productDetail.score : '暂无评分' }})</p>
         <p class="store">{{ productDetail.brand }}</p>
         <div class="price">
           <span>{{productDetail.price}}元</span>
@@ -87,12 +87,13 @@
               暂无评论
             </div>
             <template v-else>
-              <div class="comment-item" v-for="item in commentList" :key="item.id">
-                <p>
-                  <img :src="$target + item.avatar">
-                  <span>{{ item.name }}</span>
+              <div class="comment-item" v-for="item in commentList" :key="item.id"
+                style="border-bottom: 1px solid #eaeaea; padding-bottom: 12px;">
+                <p style="height: 40px; display: flex; flex-direction: row; align-items: center;">
+                  <img style="width: 24px; height: 24px; border-radius: 50%;" :src="$target + item.userAvatar">
+                  <span style="margin-left: 10px">{{ item.createBy }}</span>
                 </p>
-                <p>{{ item }}</p>
+                <p>{{ item.content }}</p>
               </div>
             </template>
           </div>
@@ -171,7 +172,7 @@ export default {
         pageSize: this.queryParams.pageSize
       }
       getCommentList(data).then(res => {
-        this.commentList = [...res.data.data]
+        this.commentList = [...res.data.list]
         this.total = res.data.total
       })
     },
@@ -200,7 +201,7 @@ export default {
         this.$store.dispatch("setShowLogin", true)
         return
       }
-      console.log()
+      console.log(this.productId)
       const data = {
         content: this.userComment,
         productId: this.productId,
@@ -208,7 +209,8 @@ export default {
       }
       addCommentItem(data).then(() => {
         this.notifySucceed('评论成功')
-        this.getCommentList()
+        this.userComment = null
+        this.getCommentList(this.productId)
       })
     }
   }

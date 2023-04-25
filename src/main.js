@@ -18,11 +18,13 @@ import './assets/css/element-variables.scss'
 import ImageUpload from '@/components/ImageUpload'
 // 图片预览组件
 import ImagePreview from '@/components/ImagePreview'
+import plugins from './plugins' // plugins
 
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
 
-Vue.use(ElementUI);
+Vue.use(ElementUI)
+Vue.use(plugins)
 
 // 全局函数及变量
 import Global from './Global';
