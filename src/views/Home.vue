@@ -24,13 +24,28 @@
             <div class="title">{{ tab.name }}</div>
           </div>
           <div class="box-bd">
-            <!-- <div class="promo-list">
-              <router-link to>
-                <img :src="$target +'public/imgs/phone/phone.png'" />
-              </router-link>
-            </div> -->
-            <div class="list">
+            <div class="list" v-if="tab.name === '相机'">
               <MyList :list="phoneList" :isMore="true"></MyList>
+            </div>
+
+            <div class="list" v-else-if="tab.name === '电脑配件'">
+              <MyList :list="phoneList1" :isMore="true"></MyList>
+            </div>
+
+            <div class="list" v-else-if="tab.name === '耳机'">
+              <MyList :list="phoneList2" :isMore="true"></MyList>
+            </div>
+
+            <div class="list" v-else-if="tab.name === '手机'">
+              <MyList :list="phoneList3" :isMore="true"></MyList>
+            </div>
+
+            <div class="list" v-else-if="tab.name === '电脑'">
+              <MyList :list="phoneList4" :isMore="true"></MyList>
+            </div>
+
+            <div class="list" v-else-if="tab.name === '手表'">
+              <MyList :list="phoneList5" :isMore="true"></MyList>
             </div>
           </div>
         </div>
@@ -44,13 +59,11 @@ export default {
     return {
       carousel: [], // 轮播图数据
       phoneList: "", // 手机商品列表
-      miTvList: "", // 小米电视商品列表
-      applianceList: "", // 家电商品列表
-      applianceHotList: "", //热门家电商品列表
-      accessoryList: "", //配件商品列表
-      accessoryHotList: "", //热门配件商品列表
-      protectingShellList: "", // 保护套商品列表
-      chargerList: "", //充电器商品列表
+      phoneList1: [],
+      phoneList2: [],
+      phoneList3: [],
+      phoneList4: [],
+      phoneList5: [],
       applianceActive: 1, // 家电当前选中的商品分类
       accessoryActive: 1, // 配件当前选中的商品分类
 
@@ -134,7 +147,9 @@ export default {
 
         if(this.goodTabs && this.goodTabs.length) {
           // 获取各类商品数据
-          this.getPromo(this.goodTabs[0])
+          Promise.all(this.goodTabs.map(item => {
+            return this.getPromo(item)
+          }))       
         }
       })
     },
@@ -150,16 +165,36 @@ export default {
     getPromo(val, api) {
       api = api != undefined ? api : '/product/list'
       const data = {
+        categoryId: val.id,
         pageNum: this.queryParams.pageNum,
         pageSize: this.queryParams.pageSize
       }
       this.$axios
         .post(api, { ...data })
         .then(res => {
-          this[val] = [ ...res.data.list ]
+          switch (val.name) {
+            case '相机':
+            this.phoneList = [ ...res.data.data.list ]
+              break;
+              case '电脑配件':
+            this.phoneList1 = [ ...res.data.data.list ]
+              break;
+              case '耳机':
+            this.phoneList2 = [ ...res.data.data.list ]
+              break;
+              case '手机':
+            this.phoneList3 = [ ...res.data.data.list ]
+              break;
+              case '电脑':
+            this.phoneList4 = [ ...res.data.data.list ]
+              break;
+              case '手表':
+            this.phoneList5 = [ ...res.data.data.list ]
+              break
+          }
         })
         .catch(err => {
-          return Promise.reject(err);
+          return Promise.reject(err)
         })
     }
   }

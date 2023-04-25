@@ -27,17 +27,7 @@
         </el-form-item>
         <el-form-item>
           <span>上传头像</span>
-          <el-upload
-            class="avatar-uploader"
-            action="https://h3w3053111.oicp.vip/file/upload"
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
-            
-            <img v-if="RegisterUser.avatar" :src="RegisterUser.avatar" class="avatar">
-            
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
+          <image-upload v-model="RegisterUser.avatar" :value="RegisterUser.avatar" :file-size="2" :limit="1"></image-upload>
         </el-form-item>
         <el-form-item prop="pass">
           <el-input

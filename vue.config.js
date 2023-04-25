@@ -7,7 +7,7 @@ module.exports = {
     open: true,
     proxy: {
       '/': {
-        target: 'https://h3w3053111.oicp.vip/', // 本地后端地址
+        target: 'https://7y2r404777.zicp.fun/', // 本地后端地址
         // target: 'http://101.132.181.9:3000/', // 线上后端地址
         changeOrigin: true, //允许跨域
         pathRewrite: {

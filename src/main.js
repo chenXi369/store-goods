@@ -14,6 +14,14 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/css/element-variables.scss'
 
+// 图片上传组件
+import ImageUpload from '@/components/ImageUpload'
+// 图片预览组件
+import ImagePreview from '@/components/ImagePreview'
+
+Vue.component('ImageUpload', ImageUpload)
+Vue.component('ImagePreview', ImagePreview)
+
 Vue.use(ElementUI);
 
 // 全局函数及变量
