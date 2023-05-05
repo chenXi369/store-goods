@@ -25,7 +25,7 @@
           </p>
         </router-link>
       </li>
-      <li v-show="isMore && list.length>=1" id="more">
+      <li v-show="isMore && list.length>=1" id="more" style="float: right">
         <router-link :to="{ path: '/goods', query: {categoryId: categoryId} }">
           浏览更多
           <i class="el-icon-d-arrow-right"></i>
@@ -94,6 +94,10 @@ export default {
   transition: all 0.2s linear;
   position: relative;
 }
+
+.myList ul li:first-child {
+  margin-left: 0px;
+}
 .myList ul li:hover {
   z-index: 2;
   -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
@@ -109,7 +113,7 @@ export default {
   margin: 0 auto;
 }
 .myList ul li h2 {
-  margin: 25px 10px 0;
+  margin: 25px 6px 0;
   font-size: 14px;
   font-weight: 400;
   color: #333;

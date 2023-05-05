@@ -174,22 +174,22 @@ export default {
         .then(res => {
           switch (val.name) {
             case '相机':
-            this.phoneList = [ ...res.data.data.list ]
+            this.phoneList = [ ...res.data.data.list ].slice(0, 4)
               break;
               case '电脑配件':
-            this.phoneList1 = [ ...res.data.data.list ]
+            this.phoneList1 = [ ...res.data.data.list ].slice(0, 4)
               break;
               case '耳机':
-            this.phoneList2 = [ ...res.data.data.list ]
+            this.phoneList2 = [ ...res.data.data.list ].slice(0, 4)
               break;
               case '手机':
-            this.phoneList3 = [ ...res.data.data.list ]
+            this.phoneList3 = [ ...res.data.data.list ].slice(0, 4)
               break;
               case '电脑':
-            this.phoneList4 = [ ...res.data.data.list ]
+            this.phoneList4 = [ ...res.data.data.list ].slice(0, 4)
               break;
               case '手表':
-            this.phoneList5 = [ ...res.data.data.list ]
+            this.phoneList5 = [ ...res.data.data.list ].slice(0, 4)
               break
           }
         })

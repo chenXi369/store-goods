@@ -96,7 +96,8 @@
 }
 
 .box-bd .list {
-  float: left;
+  display: flex;
+  flex-direction: row;
   height: 308px;
-  width: 991px;
+  width: 100%;
 }
