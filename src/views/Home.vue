@@ -26,9 +26,37 @@
         <div class="main-content">
             <div class="left-product">
             <h3>最新</h3>
+            
+            <div v-for="item in newProductList" :key="item.id" class="new-product" @click="toDetailInfo(item.id)">
+              <div>
+                <img :src="$target + item.bannerImg" alt />
+              </div>
+              
+              <div style="height: 110px; display: flex; flex-direction: column">
+                <h3 style="line-height: 40px; color: #333;">{{item.name}}</h3>
+                <h4 style="line-height: 40px; color: #666; font-weight: 500;">{{item.remark}}</h4>
+                <p style="line-height: 40px; color: #666; font-size: 13px;">
+                  {{ item.createTime }}
+                </p>
+              </div>
+            </div>
           </div>
           <div class="right-score">
             <h3>最热</h3>
+
+            <div v-for="item in hotProductList" :key="item.id" class="hot-product">
+              <div>
+                <img :src="$target + item.bannerImg" alt />
+              </div>
+              
+              <div style="height: 90px; display: flex; flex-direction: column">
+                <h3 style="line-height: 40px; color: #333;">{{item.name}}</h3>
+                <h4 style="line-height: 40px; color: #666; font-weight: 500;">{{item.remark}}</h4>
+                <p style="line-height: 40px; color: #666; font-size: 13px;">
+                  {{ item.createTime }}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -43,14 +71,9 @@ export default {
   data() {
     return {
       carousel: [], // 轮播图数据
-      phoneList: "", // 手机商品列表
-      phoneList1: [],
-      phoneList2: [],
-      phoneList3: [],
-      phoneList4: [],
-      phoneList5: [],
       applianceActive: 1, // 家电当前选中的商品分类
       accessoryActive: 1, // 配件当前选中的商品分类
+      newProductList: [],
 
       activeName: null,
       goodTabs: [],
@@ -58,7 +81,7 @@ export default {
         pageNum: 1,
         pageSize: 5
       },
-      scoreGoodList: []
+      hotProductList: []
     }
   },
   watch: {
@@ -125,6 +148,15 @@ export default {
     this.scoreRecommendList()
   },
   methods: {
+    // 跳转到详情页
+    toDetailInfo(id) {
+      this.$router.push({
+        path: '/goods/details',
+        query: {
+          productId: id
+        }
+      })
+    },
     // tab切换时的处理
     handleClick(e) {
       this.activeName = e.name
@@ -139,6 +171,7 @@ export default {
       }
       scoreRecommendList(data).then(res => {
         console.log(res.data)
+        this.hotProductList = [...res.data.data.list].slice(0, 10)
       })
     },
     getGoodCate() {
@@ -155,9 +188,7 @@ export default {
         this.activeName = this.goodTabs[0].id
         if(this.goodTabs && this.goodTabs.length) {
           // 获取各类商品数据
-          Promise.all(this.goodTabs.map(item => {
-            return this.getPromo(item)
-          }))       
+          return this.getPromo(this.activeName)      
         }
       })
     },
@@ -180,7 +211,8 @@ export default {
       this.$axios
         .post(api, { ...data })
         .then(res => {
-          this.phoneList = [ ...res.data.data.list ]
+          console.log(res)
+          this.newProductList = [ ...res.data.data.list ]
         })
         .catch(err => {
           return Promise.reject(err)
@@ -209,5 +241,37 @@ export default {
   background: #fff;
   border: 1px solid #f5f5f5;
   width: calc(100% - 290px);
+  overflow-y: scroll;
+}
+
+.main .left-product .new-product {
+  width: 100%;
+  height: 140px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: row;
+  padding: 15px 5px;
+  box-sizing: border-box;
+}
+.new-product img {
+  width: 120px;
+  height: 110px;
+  margin-right: 10px;
+}
+
+.main .left-product .hot-product {
+  width: 100%;
+  height: 100px;
+  border-bottom: 1px solid #eaeaea;
+  display: flex;
+  flex-direction: row;
+  padding: 10px 6px;
+  box-sizing: border-box;
+}
+
+.hot-product img {
+  width: 90px;
+  height: 80px;
+  margin-right: 10px;
 }
 </style>
