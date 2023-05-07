@@ -44,17 +44,12 @@
           <div class="right-score">
             <h3>最热</h3>
 
-            <div v-for="item in hotProductList" :key="item.id" class="hot-product">
-              <div>
-                <img :src="$target + item.bannerImg" alt />
-              </div>
+            <div v-for="item in hotProductList" :key="item.id" class="hot-product" @click="toDetailInfo(item.id)">
+              <img :src="$target + item.bannerImg" alt />
               
-              <div style="height: 90px; display: flex; flex-direction: column">
+              <div style="height: 80px; display: flex; flex-direction: column">
                 <h3 style="line-height: 40px; color: #333;">{{item.name}}</h3>
-                <h4 style="line-height: 40px; color: #666; font-weight: 500;">{{item.remark}}</h4>
-                <p style="line-height: 40px; color: #666; font-size: 13px;">
-                  {{ item.createTime }}
-                </p>
+                <h4 style="line-height: 40px; color: #666; font-weight: 500;">{{item.createTime}}</h4>
               </div>
             </div>
           </div>
@@ -64,9 +59,8 @@
     </div>
   </div>
 </template>
-<script>
-import { scoreRecommendList } from '@/api/hasToken'
 
+<script>
 export default {
   data() {
     return {
@@ -169,9 +163,8 @@ export default {
         pageSize: 10,
         status: '1'
       }
-      scoreRecommendList(data).then(res => {
-        console.log(res.data)
-        this.hotProductList = [...res.data.data.list].slice(0, 10)
+      this.$axios.post('/product/recommendByScore', data).then(res => {
+         this.hotProductList = [...res.data.data.list].slice(0, 10)
       })
     },
     getGoodCate() {
@@ -253,13 +246,16 @@ export default {
   padding: 15px 5px;
   box-sizing: border-box;
 }
+.main .left-product .new-product:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}
 .new-product img {
   width: 120px;
   height: 110px;
   margin-right: 10px;
 }
-
-.main .left-product .hot-product {
+.hot-product {
   width: 100%;
   height: 100px;
   border-bottom: 1px solid #eaeaea;
@@ -269,9 +265,14 @@ export default {
   box-sizing: border-box;
 }
 
+.hot-product:hover {
+  background: #f5f5f5;
+  cursor: pointer;
+}
+
 .hot-product img {
-  width: 90px;
-  height: 80px;
+  width: 80px;
+  height: 70px;
   margin-right: 10px;
 }
 </style>
