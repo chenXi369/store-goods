@@ -136,3 +136,12 @@ export function delComment(id) {
     method: 'post'
   })
 }
+
+// 根据分数推荐列表
+export function scoreRecommendList(data) {
+  return request({
+    url: '/product/recommendByscore',
+    method: 'post',
+    data
+  })
+}

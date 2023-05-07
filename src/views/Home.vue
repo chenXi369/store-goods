@@ -18,42 +18,27 @@
     <!-- 轮播图END -->
 
     <div class="main-box">
-      <div class="main">
-        <div class="phone" v-for="tab in goodTabs" :key="tab.id">
-          <div class="box-hd">
-            <div class="title">{{ tab.name }}</div>
+      <div class="main" style="margin-top: 15px">
+        <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+          <el-tab-pane v-for="tab in goodTabs" :label="tab.name" :name="tab.id" :key="tab.id"></el-tab-pane>
+        </el-tabs>
+
+        <div class="main-content">
+            <div class="left-product">
+            <h3>最新</h3>
           </div>
-          <div class="box-bd">
-            <div class="list" v-if="tab.name === '相机'">
-              <MyList :list="phoneList" :isMore="true"></MyList>
-            </div>
-
-            <div class="list" v-else-if="tab.name === '电脑配件'">
-              <MyList :list="phoneList1" :isMore="true"></MyList>
-            </div>
-
-            <div class="list" v-else-if="tab.name === '耳机'">
-              <MyList :list="phoneList2" :isMore="true"></MyList>
-            </div>
-
-            <div class="list" v-else-if="tab.name === '手机'">
-              <MyList :list="phoneList3" :isMore="true"></MyList>
-            </div>
-
-            <div class="list" v-else-if="tab.name === '电脑'">
-              <MyList :list="phoneList4" :isMore="true"></MyList>
-            </div>
-
-            <div class="list" v-else-if="tab.name === '手表'">
-              <MyList :list="phoneList5" :isMore="true"></MyList>
-            </div>
+          <div class="right-score">
+            <h3>最热</h3>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </template>
 <script>
+import { scoreRecommendList } from '@/api/hasToken'
+
 export default {
   data() {
     return {
@@ -67,11 +52,13 @@ export default {
       applianceActive: 1, // 家电当前选中的商品分类
       accessoryActive: 1, // 配件当前选中的商品分类
 
+      activeName: null,
       goodTabs: [],
       queryParams: {
         pageNum: 1,
         pageSize: 5
-      }
+      },
+      scoreGoodList: []
     }
   },
   watch: {
@@ -134,17 +121,38 @@ export default {
       })
     // 先获取商品分类
     this.getGoodCate()
+    // 获取根据积分排的列表
+    this.scoreRecommendList()
   },
   methods: {
+    // tab切换时的处理
+    handleClick(e) {
+      this.activeName = e.name
+
+      this.getPromo(e.name)
+    },
+    scoreRecommendList() {
+      const data = {
+        pageNum: 1,
+        pageSize: 10,
+        status: '1'
+      }
+      scoreRecommendList(data).then(res => {
+        console.log(res.data)
+      })
+    },
     getGoodCate() {
       const data = {
         pageNum: 1,
         pageSize: 20
       }
       this.$axios.post('/category/list', data).then(res => {
-        console.log(res)
-        this.goodTabs = [...res.data.data.list]
-
+        this.goodTabs = [...res.data.data.list].map(item => {
+          return {
+            ...item, id: String(item.id)
+          }
+        })
+        this.activeName = this.goodTabs[0].id
         if(this.goodTabs && this.goodTabs.length) {
           // 获取各类商品数据
           Promise.all(this.goodTabs.map(item => {
@@ -162,36 +170,17 @@ export default {
       this.accessoryActive = val;
     },
     // 获取各类商品数据方法封装
-    getPromo(val, api) {
+    getPromo(id, api) {
       api = api != undefined ? api : '/product/list'
       const data = {
-        categoryId: val.id,
+        categoryId: id,
         pageNum: this.queryParams.pageNum,
         pageSize: this.queryParams.pageSize
       }
       this.$axios
         .post(api, { ...data })
         .then(res => {
-          switch (val.name) {
-            case '相机':
-            this.phoneList = [ ...res.data.data.list ].slice(0, 4)
-              break;
-              case '电脑配件':
-            this.phoneList1 = [ ...res.data.data.list ].slice(0, 4)
-              break;
-              case '耳机':
-            this.phoneList2 = [ ...res.data.data.list ].slice(0, 4)
-              break;
-              case '手机':
-            this.phoneList3 = [ ...res.data.data.list ].slice(0, 4)
-              break;
-              case '电脑':
-            this.phoneList4 = [ ...res.data.data.list ].slice(0, 4)
-              break;
-              case '手表':
-            this.phoneList5 = [ ...res.data.data.list ].slice(0, 4)
-              break
-          }
+          this.phoneList = [ ...res.data.data.list ]
         })
         .catch(err => {
           return Promise.reject(err)
@@ -203,4 +192,22 @@ export default {
 
 <style scoped>
 @import "../assets/css/index.css";
+
+.main-content {
+  display: flex;
+  flex-direction: row;
+}
+.main .right-score {
+  width: 280px;
+  padding: 14px;
+  margin-left: 10px;
+  background: #fff;
+  border: 1px solid #f5f5f5;
+}
+.main .left-product {
+  padding: 14px;
+  background: #fff;
+  border: 1px solid #f5f5f5;
+  width: calc(100% - 290px);
+}
 </style>

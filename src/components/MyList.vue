@@ -94,10 +94,6 @@ export default {
   transition: all 0.2s linear;
   position: relative;
 }
-
-.myList ul li:first-child {
-  margin-left: 0px;
-}
 .myList ul li:hover {
   z-index: 2;
   -webkit-box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
